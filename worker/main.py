@@ -1,6 +1,10 @@
 # import data types
 # from ..utilities import dataTypes
 
+
+########################
+# Class definitions
+########################
 class Course:
     def __init__(self, subject = "", number = "", title = "", units = 0, prereqs = [], concurrent = [], coreqs = []):
         self.subject = subject
@@ -10,7 +14,6 @@ class Course:
         self.prereqs = prereqs
         self.concurrent = concurrent
         self.coreqs = coreqs
-        pass
 
 class CourseTuple:
     def __init__(self, num = 0, courses = [], coursetuples = []):
@@ -19,31 +22,37 @@ class CourseTuple:
         self.coursetuples = coursetuples
 
 class Quarter:
-    def __init__(self, courses = [], units = 0):
+    def __init__(self, courses = []):
         self.courses = courses
-        self.units = units
-
+    # get total num of units in quarter
+    def getUnits(self):
+        n = 0
+        for course in self.courses:
+            print("---> is " + course.title)
+            n += course.units
+        return n
+            
 class CoursePlan:
     def __init__(self, quarters = []):
-        assert type(quarters) 
+        assert all(isinstance(quarter, Quarter) for quarter in quarters)
         self.quarters = quarters
 
+
+
+
+########################
+# Function definitions
+########################
+
+# print out a single course plan
 def printCoursePlan(plan):
-    assert type(plan) == CoursePlan
-    print("correct type")
+    assert isinstance(plan, CoursePlan)
     print("Plan:")
     for quarter in plan.quarters:
-        print(" (" + str(quarter.units) + "un)")
-        # for course in quarter.courses
-        #     print("-" + course.subject + str(course.number))
+        print(" (" + str(quarter.getUnits()) + "un)")
+        for course in quarter.courses:
+            print("-" + course.subject + str(course.number))
         print("\n")
-
-            
-    
-    
-
-# courselist = []
-# tuplelist = []
 
 # Evaluation of an individual course, for whether or not it passes the constraints
 def courseEval(course, currentPlan, maxUnits):
@@ -51,6 +60,12 @@ def courseEval(course, currentPlan, maxUnits):
     assert type(currentPlan) == CoursePlan
     assert type(maxUnits) == int
 
+
+
+
+########################
+# Main
+########################
 def main():
     # init courses and create them
     courses = [Course("AMS", "10", "Applied Bullshit", 5), Course("PHYS", "5A", "Intro to Cuntimatics", 5), Course("PHYS", "5L", "Intro to Cuntimatics, Lab", 1)]
@@ -58,9 +73,10 @@ def main():
     quarter = Quarter()
     # add all courses to quarter
     for course in courses:
-        print("Course is " + course.title);
+        print("Course is " + course.subject + course.number);
+        quarter.courses.append(course) # = courses[i];
+
     # for i in range(len(courses)):
-    #     quarter.courses[i] = courses[i];
     # init overall plan
     plan = CoursePlan([quarter])
     # print plan
