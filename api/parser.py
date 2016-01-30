@@ -25,7 +25,7 @@ def parse(file):
     f = open(file, 'r')
     line = f.readline()
     while line:
-        
+            
         #If line is commented out, ignore it
         if line[0] == '#':
             line = f.readline()
@@ -37,9 +37,14 @@ def parse(file):
         x.number = line.split(';')[1]      
         x.title = line.split(';')[2]
         x.units = line.split(';')[3]
-        x.prereqs = parseTuple(line.split(';')[4])
-        x.concurrent = parseTuple(line.split(';')[5])
-        x.coreqs = parseTuple(line.split(';')[6])
+        x.prereqs = line.split(';')[4]
+        x.concurrent = line.split(';')[5]
+        x.coreqs = line.split(';')[6]
+
+    for i in courselist:
+        i.prereqs = parseTuple(i.prereqs)
+        i.concurrent = parseTuple(i.concurrent)
+        i.coreqs = parseTuple(i.coreqs)
 
 def parseTuple(tup):
     assert type(tup) == tuple
@@ -50,8 +55,9 @@ def parseTuple(tup):
     x.courses = tup[1]
     assert type(tup[2]) == list
     y = []
-    for index, item in enumerate(tup[2]):
-        y[index] = parseTuple(item)
+    for item in tup[2]:
+        y.append(parseTuple(item))
     x.coursetuples = y
+    tuplelist.append(x)
     return x
     
