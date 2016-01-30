@@ -21,17 +21,17 @@ courselist = []
 tuplelist = []
 
 def parse(file):
-    #Open file and read first line
+    # Open file and read first line
     f = open(file, 'r')
     line = f.readline()
     while line:
             
-        #If line is commented out, ignore it
+        # If line is commented out, ignore it
         if line[0] == '#':
             line = f.readline()
             continue
 
-        #Create new Course object
+        # Create new Course object
         x = Course()
         x.subject = line.split(';')[0]
         x.number = line.split(';')[1]      

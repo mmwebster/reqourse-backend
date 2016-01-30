@@ -1,1 +1,0 @@
-This includes all worker algorithms for processing course info and outputting paths that can be computationally intensive. Every public function (W.R.T. the api) must accepted params given to it by the api, then output a coursePlan data type that is then converted to json by the api.
