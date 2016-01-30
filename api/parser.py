@@ -1,5 +1,6 @@
 from ast import literal_eval
 
+
 class Course:
     def __init__(self, subject="", number="", title="", units="", prereqs="", concurrent="", coreqs=""):
         self.subject = subject
@@ -9,7 +10,6 @@ class Course:
         self.prereqs = prereqs
         self.concurrent = concurrent
         self.coreqs = coreqs
-        pass
 
 class CourseTuple:
     def __init__(self, num="", courses = [], coursetuples = []):
@@ -17,7 +17,7 @@ class CourseTuple:
         self.courses = courses
         self.coursetuples = coursetuples
         
-courselist = []
+courselist = {}
 tuplelist = []
 
 def parse(file):
@@ -41,10 +41,15 @@ def parse(file):
         x.concurrent = line.split(';')[5]
         x.coreqs = line.split(';')[6]
 
+        courselist[x.subject+x.number] = x
+
+        print(x.subject,x.number,x.title,x.units,x.prereqs,x.concurrent,)
+        line = f.readline()
+
     for i in courselist:
-        i.prereqs = parseTuple(i.prereqs)
-        i.concurrent = parseTuple(i.concurrent)
-        i.coreqs = parseTuple(i.coreqs)
+        courselist[i].prereqs = parseTuple(literal_eval(courselist[i].prereqs))
+        courselist[i].concurrent = parseTuple(literal_eval(courselist[i].concurrent))
+        courselist[i].coreqs = parseTuple(literal_eval(courselist[i].coreqs))
 
 def parseTuple(tup):
     assert type(tup) == tuple
@@ -54,10 +59,13 @@ def parseTuple(tup):
     assert type(tup[1]) == list
     x.courses = tup[1]
     assert type(tup[2]) == list
-    y = []
     for item in tup[2]:
-        y.append(parseTuple(item))
-    x.coursetuples = y
+        x.coursetuples.append(parseTuple(item))
     tuplelist.append(x)
+    printTuple(x)
     return x
     
+def printTuple(x):
+    print(str(x.num)+str(x.courses)+str(x.coursetuples))
+
+parse('courses.txt')
