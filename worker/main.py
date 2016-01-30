@@ -22,3 +22,6 @@ print("Hello");
 
 courselist = []
 tuplelist = []
+
+# def courseEval(course):
+#     
