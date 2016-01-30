@@ -23,7 +23,7 @@ class CourseTuple:
         self.coursetuples = coursetuples
 
 class Quarter:
-    def __init__(self, courses = []):
+    def __init__(self, courses = [], season = ""):
         self.courses = courses
     # get total num of units in quarter
     def getUnits(self):
@@ -57,11 +57,13 @@ def printCoursePlan(plan):
             print(" -" + course.subject + str(course.number))
 
 # Evaluation of an individual course, for whether or not it passes the constraints
-def courseEval(newCourse, currentPlan, maxUnits):
+def courseEval(newCourse, currentPlan, maxUnits, currentQuarter):
     # confirm correct type
-    assert type(course) == Course
-    assert type(currentPlan) == CoursePlan
+    assert isinstance(newCourse, Course)
+    assert isinstance(currentPlan, CoursePlan)
     assert type(maxUnits) == int
+    assert type(currentQuarter) == int
+
     # course already placed in plan?
     # inspect every quarter in plan
     for quarter in currentPlan.quarters:
@@ -69,9 +71,10 @@ def courseEval(newCourse, currentPlan, maxUnits):
         for course in quarter.courses:
             idPrevCourse = course.subject + course.number
             idNewCourse = newCourse.subject + newCourse.number
-            if idPrevCourse is idNewCourse:
+            if idPrevCourse == idNewCourse:
                 return False
 
+    for season in currentQuarter
 
 
     # At very end if none of the conditions fail
@@ -96,11 +99,18 @@ def main():
     # print plan
     printCoursePlan(plan);
 
-    newCourse = Course("AMS", "20")
+    newCourse = Course("PHYS", "5C", "Intro to Cuntimatics", 5, [], [], [], {"fall":False, "winter":False, "spring":True})
+
+
+    ####### courseEval unit test ########
+    #newCourse = Course("PHYS", "5C", "Intro to Cuntimatics", 5)
     if courseEval(newCourse, plan, 19):
         print("Course eval succeeded.")
     else:
         print("Course eval failed.")
+    ######################################
+
+
 
 
 main()
