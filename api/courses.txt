@@ -1,102 +1,108 @@
-#AMS;3;Precalculus for Science and Engineering;{1:MATH2:};{0::};{0::}
-#AMS;6;Precalculus for Statistics;{1:MATH2:};{0::};{0::}
-#AMS;7;Statistical Methods for the Biological, Environmental, and Health Sciences;{1:AMS2/AMS3/AMS6/AMS11A/MATH15A/MATH3/MATH11A/MATH19A:};{1:AMS7L:};{0::}
-#AMS;7L;Statistical Methods for the Biological, Environmental, and Health Sciences Laboratory;{1:AMS2/AMS3/AMS6/AMS11A/MATH15A/MATH3/MATH11A/MATH19A:};{1:AMS7L:};{0::}
-#AMS;10A;Basic Mathematical Methods for Engineers I;{1:MATH3:};{0::};{0::}
-#AMS;10B;Mathematical Methods for Engineers IB;{1:AMS10A:};{0::};{0::}
-#AMS;11A;Mathematical Methods for Economists I;{1:MATH3/AMS2/AMS3/AMS6:};{0::};{0::}
-#AMS;11B;Mathematical Methods for Economists II;{3::{1:MATH19A:}/{1:MATH11A:{2:AMS11A/ECON11A}:}};{0::};{0::}
-#AMS;15A;Case-Study Calculus I;{1:MATH3:};{0::};{0::}
-#AMS;15B;Case-Study Calculus II;{1:AMS15A/AMS11A/ECON11A/MATH11A/MATH19A:};{0::};{0::}
-#AMS;20A;Basic Mathematical Methods for Engineers II;{2:MATH19B:{1:AMS10/AMS10A/MATH21:}};{0::};{0::}
-#AMS;20B;Mathematical Methods for Engineers IIB;{1:AMS20A:};{0::};{0::}
-#AMS;131;Introduction to Probability Theory;{1:AMS11B/MATH11B/MATH19B:};{0::};{0::}
-AMS;10;Mathematical Methods for Engineers I;{1:MATH3:};{0::};{0::}
-AMS;20;Mathematical Methods for Engineers II;{2:MATH19B:{1:AMS10/AMS10A/MATH21:}};{0::};{0::}
-CMPE;12;Computer Systems and Assembly Language;{0::};{1:CMPE12L:};{0::}
-CMPE;12L;Computer Systems and Assembly Language Laboratory;{0::};{1:CMPE12:};{0::}
-CMPE;13;Computer Systems and C Programming;{2:CMPE12/CMPE12L:};{1:CMPE13L:};{0::}
-CMPE;13L;Computer Systems and C Programming Laboratory;{0::};{1:CMPE13:};{0::}
-CMPE;16;Applied Discrete Mathematics;{1:MATH19A/MATH11B/AMS11B/AMS15B/ECON11B:};{0::};{0::}
-CMPE;80E;Engineering Ethics;{0::};{0::};{0::}
-CMPE;100;Logic Design;{2:CMPE12/CMPE12L:};{1:CMPE100L:};{0::}
-CMPE;100L;Logic Design Laboratory;{0::};{1:CMPE100:};{0::}
-CMPE;107;Probability and Statistics for Engineers (formerly Math Systems: Stochastic);{2:CMPE16/MATH23A:};{0::};{0::}
-CMPE;118;Introduction to Mechatronics;{4:CMPE100/CMPE100L/EE101/EE101L:};{0::};{0::}
-CMPE;118L;Introduction to Mechatronics Laboratory;{0::};{1:CMPE118:};{0::}
-CMPE;121;Microprocessor System Design;{8:CMPE12/CMPE12L/CMPE100/CMPE100L/EE101/EE101L/CMPE13/CMPE13L:};{0::};{0::}
-CMPE;121L;Microprocessor System Design Laboratory;{0::};{0:CMPE121:};{0::}
-CMPE;150;Introduction to Computer Networks;{0:CMPE16/CMPE12/CMPE12L:};{0::};{0::}
-CMPE;150L;Introduction to Computer Networks Laboratory;{0::};{1:CMPE150:};{0::}
-CMPE;167;Sensing and Sensor Technologies;{1:EE103:};{1:CMPE167L:};{0::}
-CMPE;167L;Sensing and Sensor Technologies Lab;{0::};{1:CMPE167:};{0::}
-CMPE;185;Technical Writing for Computer Engineers;{1:CMPE12:};{0::};{0::}
-CMPE;251;Error-Control Coding;{0::};{0::};{0::}
-EE;80T;Modern Electronic Technology and How It Works;{0::};{0::};{0::}
-EE;101;Introduction to Electronic Circuits;{1::{2:PHYS5/PHYS5L:}/{2:PHYS6/PHYS6L:}};{1:EE101L:};{1:AMS20/AMS20A:}
-EE;101L;Introduction to Electronic Circuits Laboratory;{0::};{1:EE101:};{0::}
-EE;103;Signals and Systems;{3:EE101/EE101L/AMS20:};{0::};{0::}
-EE;103L;Signals and Systems Lab;{0::};{1:EE103:};{0::}
-EE;104;Bio-electronics and Bio-instrumentations;{1:EE103:};{0::};{0::}
-EE;115;Introduction to Micro-Electro-Mechanical-Systems Design;{8:EE101/EE101L/EE135/EE135L/EE145/EE145L/MATH23B/PHYS5D:};{0::};{0::}
-EE;129A;Capstone Project I;{3:EE171/CMPE100/CMPE185:};{0::};{1:CMPE156/CMPE118/CMPE121:}
-EE;129B;Capstone Project II;{1:EE129A:};{0::};{0::}
-EE;129C;Capstone Project III;{1:EE129B:};{0::};{0::}
-EE;130;Introduction to Optoelectronics and Photonics;{2:PHYS5B/PHYS5C:};{1:EE130L:};{0::}
-EE;130L;Introduction to Optoelectronics Laboratory;{0::};{1:EE130:};{0::}
-EE;135;Electromagnetic Fields and Waves;{1:EE101/EE101L/MATH23B:};{1:EE135L:};{0::}
-EE;135L;Electromagnetic Fields and Waves Laboratory;{0::};{1:EE135:};{0::}
-EE;136;Engineering Electromagnetics;{2:EE135/EE135L:};{0::};{0::}
-EE;145;Properties of Materials;{2:PHYS5C/PHYS5N:};{1:EE145L:};{0::}
-EE;145L;Properties of Materials Laboratory;{0::};{1:EE145:};{0::}
-EE;151;Communications Systems;{4:EE103/EE101/EE101L/CMPE107:};{0::};{0::}
-EE;152;Introduction to Wireless Communications;{2:CMPE107/EE151:};{0::};{0::}
-EE;153;Digital Signal Processing;{1:EE103:};{0::};{0::}
-EE;154;Feedback Control Systems;{1:EE103:};{0::};{0::}
-EE;157;RF Hardware Design;{5:EE101/EE101L/EE103/EE171/CMPE174:};{1:EE157L:};{0::}
-EE;157L;RF Hardware Design;{0::};{1:EE157:};{0::}
-EE;171;Analog Electronics;{2:EE101/EE101L:};{0::};{1:EE171L:}
-EE;171L;Analog Electronics Laboratory;{2:EE101/EE101L:};{0::};{1:EE171:}
-EE;172;Advanced Analog Circuits;{1:EE171:};{0::};{0::}
-EE;173;High-Speed Digital Design;{3:EE101/EE101L/EE174:};{0::};{1:EE173L:}
-EE;173L;High-Speed Digital Design Laboratory;{3:EE101/EE101L/EE174:};{0::};{1:EE173L:}
-EE;175;Energy Generation and Control;{1:EE101:};{1:EE175L:};{0::}
-EE;175L;Energy Generation and Control Laboratory;{0::};{1:EE175:};{0::}
-EE;176;Energy Conversion and Control;{2:EE103/EE171:};{1:EE176L:};{0::}
-EE;176L;Energy Conversion and Control Laboratory;{0::};{1:EE176:};{0::}
-EE;177;Power Electronics;{1:EE103:};{1:EE177L:};{0::}
-EE;177L;Power Electronics Laboratory;{0::};{1:EE177:};{0::}
-EE;178;Device Electronics;{4:EE145/EE145L/EE171/EE171L:};{0::};{0::}
-EE;180J;Advanced Renewable Energy Sources;{0::};{0::};{0::}
-EE;211;Introduction to Nanotechnology;{1:EE145:};{0::};{0::}
-EE;213;Nanocharacterization of Materials;{0::};{0::};{0::}
-EE;231;Optical Electronics;{2:EE145/EE145L:};{0::};{0::}
-EE;251;Principles of Digital Communications;{2:EE151/EE153:};{0::};{0::}
-EE;253;Introduction to Information Theory;{1:CMPE107/AMS131:};{0::};{0::}
-EE;261;Error Control Coding;{0::};{0::};{0::}
-EE;262;Statistical Signal Processing;{2:EE103/CMPE107:};{0::};{0::}
-EE;264;Image Processing and Reconstruction;{1:EE153:};{0::};{0::}
-PHYS;5A;Introduction To Physics I;{1:MATH19A/MATH20A:};{1:PHYS5L:};{0::}
-PHYS;5L;Introduction To Physics II;{3:PHYS5A/PHYS5L:{1:MATH19A/MATH20A:}};{1:PHYS5M:};{1:MATH19B/MATH20B:}
-PHYS;5B;Introduction To Physics III;{3:PHYS5A/PHYS5L:{1::}};{0::};{0::}
-PHYS;5M;Introduction To Physics I Laboratory;{2:PHYS5A/PHYS5L:};{1:PHYS5B:};{0::}
-PHYS;5C;Introduction To Physics II Laboratory;{2::{2:PHYS5A/PHYS5L:/{1:MATH19B/MATH20B};{1:PHYS5N:};{1::}
-PHYS;5N;Introduction To Physics III Laboratory;{0::};{0::};{1:MATH11A/MATH19A/MATH20A/AMS15:}
-MATH;19A;Calculus for Science; Engineering; and Mathematics;{1:MATH3/AMS3:};{0::};{0::}
-MATH;19B;Calculus for Science; Engineering; and Mathematics;{1:MATH19A:};{0::};{0::}
-MATH;23A;Vector Calculus;{1:MATH19B/MATH20B:};{0::};{0::}
-MATH;23B;Vector Calculus;{1:MATH23A:};{0::};{0::}
-#PHYS;6A;Introductory Physics I;{0::};{0::};{1:MATH11A/MATH19A/MATH20A/AMS15:}
-#PHYS;6L;Introductory Physics II;{0::};{1:PHYS6A:};{0::}
-#PHYS;6B;Introductory Physics III;{2::{2:PHYS5A/PHYS5L:}/{2:PHYS6A/PHYS6L:{1:MATH11A/MATH19A/MATH20A/AMS15A}:}};{0::};{1:MATH11B/MATH19B/MATH20B:}
-#PHYS;6M;Introductory Physics I Laboratory;{0::};{1:PHYS6B:};{0::}
-#PHYS;6C;Introductory Physics II Laboratory;{1::{2:PHYS5A/PHYS5L:}/{2:PHYS6A/PHYS6L:}};{1:PHYS6N:};{0::}
-#PHYS;6N;Introductory Physics III Laboratory;{0::};{1:PHYS6C:};{0::}
-#MATH;3;Precalculus;{1:MATH2:};{0::};{0::}
-#MATH;11A;Calculus with Applications;{1:MATH3/AMS3:};{0::};{0::}
-#MATH;11B;Calculus with Applications;{1:MATH11A/MATH19A/AMS15A:};{0::};{0::}
-#MATH;20A;Honors Calculus;{0::};{0::};{0::}
-#MATH;20B;Honors Calculus;{1:MATH20A:};{0::};{0::}
-#MATH;21;Linear Algebra;{1:MATH11A/MATH19A/MATH20A/AMS11A/AMS15A:};{0::};{0::}
-#MATH;22;Introduction to Calculus of Several Variables;{1:MATH11B/MATH19B/MATH20B/AMS15B:};{0::};{0::}
-#MATH;24;Ordinary Differential Equations;5;{1:MATH23A/MATH22:};{0::};{0::}
+#AMS;3;Precalculus for Science and Engineering;5;(1,['MATH2'],[]);(0,[],[]);(0,[],[])
+#AMS;6;Precalculus for Statistics;5;(1,['MATH2'],[]);(0,[],[]);(0,[],[])
+#AMS;7;Statistical Methods for the Biological, Environmental, and Health Sciences;5;(1,['AMS2','AMS3','AMS6','AMS11A','MATH15A','MATH3','MATH11A','MATH19A'],[]);(1,['AMS7L'],[]);(0,[],[])
+#AMS;7L;Statistical Methods for the Biological, Environmental, and Health Sciences Laboratory;2;(1,['AMS2','AMS3','AMS6','AMS11A','MATH15A','MATH3','MATH11A','MATH19A'],[]);(1,['AMS7L'],[]);(0,[],[])
+#AMS;10A;Basic Mathematical Methods for Engineers I;5;(1,['MATH3'],[]);(0,[],[]);(0,[],[])
+#AMS;10B;Mathematical Methods for Engineers IB;5;(1,['AMS10A'],[]);(0,[],[]);(0,[],[])
+#AMS;11A;Mathematical Methods for Economists I;5;(1,['MATH3','AMS2','AMS3','AMS6'],[]);(0,[],[]);(0,[],[])
+#AMS;11B;Mathematical Methods for Economists II;5;(3,[],[(1,['MATH19A'],[]),(1,['MATH11A'],[(2,'AMS11A','ECON11A')],[])]);(0,[],[]);(0,[],[])
+#AMS;15A;Case-Study Calculus I;5;(1,'MATH3',[]);(0,[],[]);(0,[],[])
+#AMS;15B;Case-Study Calculus II;5;(1,['AMS15A','AMS11A','ECON11A','MATH11A','MATH19A'],[]);(0,[],[]);(0,[],[])
+#AMS;20A;Basic Mathematical Methods for Engineers II;5;(2,['MATH19B'],[(1,['AMS10','AMS10A','MATH21'],[])]);(0,[],[]);(0,[],[])
+#AMS;20B;Mathematical Methods for Engineers IIB;5;(1,['AMS2'0A],[]);(0,[],[]);(0,[],[])
+#AMS;131;Introduction to Probability Theory;5;(1,['AMS11B','MATH11B','MATH19B'],[]);(0,[],[]);(0,[],[])
+AMS;10;Mathematical Methods for Engineers I;5;(1,['MATH3'],[]);(0,[],[]);(0,[],[])
+AMS;20;Mathematical Methods for Engineers II;5;(2,['MATH19B'],[(1,['AMS10','AMS10A','MATH21'],[])]);(0,[],[]);(0,[],[])
+CMPE;12;Computer Systems and Assembly Language;5;(0,[],[]);(1,['CMPE12L'],[]);(0,[],[])
+CMPE;12L;Computer Systems and Assembly Language Laboratory;2;(0,[],[]);(1,['CMPE12'],[]);(0,[],[])
+CMPE;13;Computer Systems and C Programming;5;(2,['CMPE12','CMPE12L'],[]);(1,['CMPE13L'],[]);(0,[],[])
+CMPE;13L;Computer Systems and C Programming Laboratory;2;(0,[],[]);(1,['CMPE13'],[]);(0,[],[])
+CMPE;16;Applied Discrete Mathematics;5;(1,['MATH19A','MATH11B','AMS11B','AMS15B','ECON11B'],[]);(0,[],[]);(0,[],[])
+CMPE;80E;Engineering Ethics;5;(0,[],[]);(0,[],[]);(0,[],[])
+CMPE;100;Logic Design;5;(2,['CMPE12','CMPE12L'],[]);(1,['CMPE100L'],[]);(0,[],[])
+CMPE;100L;Logic Design Laboratory;2;(0,[],[]);(1,['CMPE100'],[]);(0,[],[])
+CMPE;107;Probability and Statistics for Engineers (formerly Math Systems, Stochastic);5;(2,['CMPE16','MATH23A'],[]);(0,[],[]);(0,[],[])
+CMPE;118;Introduction to Mechatronics;5;(4,['CMPE100','CMPE100L','EE101','EE101L'],[]);(0,[],[]);(0,[],[])
+CMPE;118L;Introduction to Mechatronics Laboratory;5;(0,[],[]);(1,['CMPE118'],[]);(0,[],[])
+CMPE;121;Microprocessor System Design;5;(8,['CMPE12','CMPE12L','CMPE100','CMPE100L','EE101','EE101L','CMPE13','CMPE13L'],[]);(0,[],[]);(0,[],[])
+CMPE;121L;Microprocessor System Design Laboratory;2;(0,[],[]);(0,['CMPE121'],[]);(0,[],[])
+CMPE;150;Introduction to Computer Networks;5;(0,['CMPE16','CMPE12','CMPE12L'],[]);(0,[],[]);(0,[],[])
+CMPE;150L;Introduction to Computer Networks Laboratory;2;(0,[],[]);(1,['CMPE150'],[]);(0,[],[])
+CMPE;167;Sensing and Sensor Technologies;5;(1,['EE103'],[]);(1,['CMPE167L'],[]);(0,[],[])
+CMPE;167L;Sensing and Sensor Technologies Lab;2;(0,[],[]);(1,['CMPE167'],[]);(0,[],[])
+CMPE;185;Technical Writing for Computer Engineers;5;(1,['CMPE12'],[]);(0,[],[]);(0,[],[])
+CMPE;251;Error-Control Coding;5;(0,[],[]);(0,[],[]);(0,[],[])
+EE;80T;Modern Electronic Technology and How It Works;5;(0,[],[]);(0,[],[]);(0,[],[])
+EE;101;Introduction to Electronic Circuits;5;(1,[],[(2,['PHYS5C','PHYS5N'],[]),(2,['PHYS6C','PHYS6N'],[])]);(0,[],[]);(1,['AMS20','AMS20A'],[]);
+EE;101L;Introduction to Electronic Circuits Laboratory;2;(0,[],[]);(1,['EE101'],[]);(0,[],[])
+EE;103;Signals and Systems;5;(3,['EE101','EE101L','AMS20'],[]);(0,[],[]);(0,[],[])
+EE;103L;Signals and Systems Lab;5;(0,[],[]);(1,['EE103'],[]);(0,[],[])
+EE;104;Bio-electronics and Bio-instrumentations;5;(1,['EE103'],[]);(0,[],[]);(0,[],[])
+EE;115;Introduction to Micro-Electro-Mechanical-Systems Design;5;(8,['EE101','EE101L','EE135','EE135L','EE145','EE145L','MATH23B','PHYS5D'],[]);(0,[],[]);(0,[],[])
+EE;129A;Capstone Project I;5;(3,['EE171','CMPE100','CMPE185'],[]);(0,[],[]);(1,['CMPE156','CMPE118','CMPE121'],[])
+EE;129B;Capstone Project II;5;(1,['EE129A'],[]);(0,[],[]);(0,[],[])
+EE;129C;Capstone Project III;5;(1,['EE129B'],[]);(0,[],[]);(0,[],[])
+EE;130;Introduction to Optoelectronics and Photonics;5;(2,['PHYS5B','PHYS5C'],[]);(1,['EE130L'],[]);(0,[],[])
+EE;130L;Introduction to Optoelectronics Laboratory;2;(0,[],[]);(1,['EE130'],[]);(0,[],[])
+EE;135;Electromagnetic Fields and Waves;5;(1,['EE101','EE101L','MATH23B'],[]);(1,['EE135L'],[]);(0,[],[])
+EE;135L;Electromagnetic Fields and Waves Laboratory;2;(0,[],[]);(1,['EE135'],[]);(0,[],[])
+EE;136;Engineering Electromagnetics;5;(2,['EE135','EE135L'],[]);(0,[],[]);(0,[],[])
+EE;145;Properties of Materials;5;(2,['PHYS5C','PHYS5N'],[]);(1,['EE145L'],[]);(0,[],[])
+EE;145L;Properties of Materials Laboratory;2;(0,[],[]);(1,['EE145'],[]);(0,[],[])
+EE;151;Communications Systems;5;(4,['EE103','EE101','EE101L','CMPE107'],[]);(0,[],[]);(0,[],[])
+EE;152;Introduction to Wireless Communications;5;(2,['CMPE107','EE151'],[]);(0,[],[]);(0,[],[])
+EE;153;Digital Signal Processing;5;(1,['EE103'],[]);(0,[],[]);(0,[],[])
+EE;154;Feedback Control Systems;5;(1,['EE103'],[]);(0,[],[]);(0,[],[])
+EE;157;RF Hardware Design;5;(5,['EE101','EE101L','EE103','EE171','CMPE174'],[]);(1,['EE157L'],[]);(0,[],[])
+EE;157L;RF Hardware Design;2;(0,[],[]);(1,['EE157'],[]);(0,[],[])
+EE;171;Analog Electronics;5;(2,['EE101','EE101L'],[]);(0,[],[]);(1,['EE171L'],[])
+EE;171L;Analog Electronics Laboratory;2;(2,['EE101','EE101L'],[]);(0,[],[]);(1,['EE171'],[])
+EE;172;Advanced Analog Circuits;5;(1,['EE171'],[]);(0,[],[]);(0,[],[])
+EE;173;High-Speed Digital Design;5;(3,['EE101','EE101L','EE174'],[]);(0,[],[]);(1,['EE173L'],[])
+EE;173L;High-Speed Digital Design Laboratory;2;(3,['EE101','EE101L','EE174'],[]);(0,[],[]);(1,['EE173L'],[])
+EE;175;Energy Generation and Control;5;(1,['EE101'],[]);(1,['EE175L'],[]);(0,[],[])
+EE;175L;Energy Generation and Control Laboratory;2;(0,[],[]);(1,['EE175'],[]);(0,[],[])
+EE;176;Energy Conversion and Control;5;(2,['EE103','EE171'],[]);(1,['EE176L'],[]);(0,[],[])
+EE;176L;Energy Conversion and Control Laboratory;2;(0,[],[]);(1,['EE176'],[]);(0,[],[])
+EE;177;Power Electronics;5;(1,['EE103'],[]);(1,['EE177L'],[]);(0,[],[])
+EE;177L;Power Electronics Laboratory;2;(0,[],[]);(1,['EE177'],[]);(0,[],[])
+EE;178;Device Electronics;5;(4,['EE145','EE145L','EE171','EE171L'],[]);(0,[],[]);(0,[],[])
+EE;180J;Advanced Renewable Energy Sources;5;(0,[],[]);(0,[],[]);(0,[],[])
+EE;211;Introduction to Nanotechnology;5;(1,['EE145'],[]);(0,[],[]);(0,[],[])
+EE;213;Nanocharacterization of Materials;5;(0,[],[]);(0,[],[]);(0,[],[])
+EE;231;Optical Electronics;5;(2,['EE145','EE145L'],[]);(0,[],[]);(0,[],[])
+EE;251;Principles of Digital Communications;5;(2,['EE151','EE153'],[]);(0,[],[]);(0,[],[])
+EE;253;Introduction to Information Theory;5;(1,['CMPE107','AMS131'],[]);(0,[],[]);(0,[],[])
+EE;261;Error Control Coding;5;(0,[],[]);(0,[],[]);(0,[],[])
+EE;262;Statistical Signal Processing;5;(2,['EE103','CMPE107'],[]);(0,[],[]);(0,[],[])
+EE;264;Image Processing and Reconstruction;5;(1,['EE153'],[]);(0,[],[]);(0,[],[])
+#
+PHYS;5A;Introduction To Physics I;5;(0,[],[]);(1,['PHYS5L'],[]);(1,['MATH19A','MATH20A'],[])
+PHYS;5B;Introduction To Physics II;5;(1,['PHYS5A'],[]);(1,['PHYS5M'],[]);(1,['MATH19B','MATH20B'],[])
+PHYS;5C;Introduction To Physics III;5;(1,['PHYS5A'],[]);(1,['PHYS5N'],[]);(1,['MATH19B','MATH20B'],[])
+#
+PHYS;5L;Introduction To Physics I Laboratory;1;(0,[],[]);(1,['PHYS5A'],[]);(0,[],[])
+PHYS;5M;Introduction To Physics II Laboratory;1;(0,[],[]);(1,['PHYS5B'],[]);(0,[],[])
+PHYS;5N;Introduction To Physics III Laboratory;1;(0,[],[]);(1,['PHYS5C'],[]);(0,[],[])
+#
+MATH;19A;Calculus for Science, Engineering, and Mathematics;5;(1,['MATH3','AMS3'],[]);(0,[],[]);(0,[],[])
+MATH;19B;Calculus for Science, Engineering, and Mathematics;5;(1,['MATH19A'],[]);(0,[],[]);(0,[],[])
+MATH;23A;Vector Calculus;5;(1,['MATH19B','MATH20B'],[]);(0,[],[]);(0,[],[])
+MATH;23B;Vector Calculus;5;(1,['MATH23A'],[]);(0,[],[]);(0,[],[])
+#
+#PHYS;6A;Introductory Physics I;5;(0,[],[]);(0,[],[]);(1,['MATH11A','MATH19A','MATH20A','AMS15'],[])
+#PHYS;6B;Introductory Physics II;5;(0,[],[]);(1,['PHYS6A'],[]);(0,[],[])
+#PHYS;6C;Introductory Physics III;5;(2,[],[(2,['PHYS5A','PHYS5L'],[])],(2,'PHYS6A','PHYS6L',[(1,['MATH11A','MATH19A','MATH20A','AMS15A'],[])],[]));(0,[],[]);(1,['MATH11B','MATH19B','MATH20B'],[])
+#
+#PHYS;6L;Introductory Physics I Laboratory;1;(0,[],[]);(1,['PHYS6B'],[]);(0,[],[])
+#PHYS;6M;Introductory Physics II Laboratory;1;(1,[],(2,['PHYS5A','PHYS5L'],[]),[(2,['PHYS6A','PHYS6L'],[])]);(1,['PHYS6N'],[]);(0,[],[])
+#PHYS;6N;Introductory Physics III Laboratory;1;(0,[],[]);(1,['PHYS6C'],[]);(0,[],[])
+#
+#MATH;3;Precalculus;5;(1,[MATH2],[]);(0,[],[]);(0,[],[])
+#MATH;11A;Calculus with Applications;5;(1,['MATH3','AMS3'],[]);(0,[],[]);(0,[],[])
+#MATH;11B;Calculus with Applications;5;(1,['MATH11A','MATH19A','AMS15A'],[]);(0,[],[]);(0,[],[])
+#MATH;20A;Honors Calculus;5;(0,[],[]);(0,[],[]);(0,[],[])
+#MATH;20B;Honors Calculus;5;(1,['MATH20A'],[]);(0,[],[]);(0,[],[])
+#MATH;21;Linear Algebra;5;(1,['MATH11A','MATH19A','MATH20A','AMS11A','AMS15A'],[]);(0,[],[]);(0,[],[])
+#MATH;22;Introduction to Calculus of Several Variables;5;(1,['MATH11B','MATH19B','MATH20B','AMS15B'],[]);(0,[],[]);(0,[],[])
+#MATH;24;Ordinary Differential Equations;5;(1,['MATH23A','MATH22'],[]);(0,[],[]);(0,[],[])
