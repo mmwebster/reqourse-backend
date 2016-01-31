@@ -21,14 +21,14 @@ class CourseTuple:
         self.courseTuples = courseTuples
 
 class Course:
-    def __init__(self, subject = "", number = "", title = "", units = 0, prereqs = CourseTuple(), concurrent = CourseTuple(), coreqs = CourseTuple(), seasonsOffered = {"fall": False, "winter": False, "spring": False}):
+    def __init__(self, subject = "", number = "", title = "", units = 0, preReqs = CourseTuple(), coReqs = CourseTuple(), concurrent = CourseTuple(), seasonsOffered = {"fall": False, "winter": False, "spring": False}):
         self.subject = subject
         self.number = number
         self.title = title
         self.units = units
-        self.prereqs = prereqs
+        self.preReqs = preReqs
+        self.coReqs = coReqs
         self.concurrent = concurrent
-        self.coreqs = coreqs
         self.seasonsOffered = seasonsOffered # default to false
 
 class Quarter:
@@ -47,11 +47,12 @@ class CoursePlan:
     def __init__(self, quarters = [], completed = []):
         assert all(isinstance(quarter, Quarter) for quarter in quarters)
         self.quarters = quarters
+        self.completed = completed
     # get # of filled quarters
     def getNumQuarters(self):
         return len(self.quarters)
     def isCompleted(self, course):
-        for completedCourse in completed:
+        for completedCourse in self.completed:
             completedId = completedCourse.subject + completedCourse.number
             courseId = course.subject + course.number
             if completedId == courseId:
@@ -89,7 +90,7 @@ def satisfied(plan, courseTuple, offset):
             numSatisfied += 1
         if numSatisfied >= courseTuple.numRequired:
             return True
-    for nestedTuple in courseTuple.tuples:
+    for nestedTuple in courseTuple.courseTuples:
         if satisfied(plan, nestedTuple, offset):
             numSatisfied += 1
         if numSatisfied >= courseTuple.numRequired:
@@ -128,8 +129,16 @@ def courseEval(newCourse, currentPlan, maxUnits, currentQuarter):
 
     # 3. All pre-reqs satisfied? 
     # @param offset=1 b/c checking pre-reqs so must be 1 qtr back
-    if not satisfied(newCourse.preReqs, 1, currentPlan):
+    # print("Checking if preReqs satisfied for " + newCourse.subject + newCourse.number)
+    # if not satisfied(currentPlan, newCourse.preReqs, 1):
+    #     return False
+
+    # 4. All co-reqs satisfied? 
+    # @param offset=0 b/c checking co-reqs so course can be in current quarter. This works b/c coReqs in the A1 tree are listed as dependent on the courses that they satisfy so the breadth first search will pull them out first and then they will be in the plan (if they worked) prior to checking if the course that can use it as a co-req works.
+    print("Checking if coReqs satisfied for " + newCourse.subject + newCourse.number)
+    if not satisfied(currentPlan, newCourse.coReqs, 0):
         return False
+
 
     # At very end if none of the conditions fail
     return True
@@ -152,15 +161,15 @@ def main():
     quarters = [Quarter(courses[0], "fall"), Quarter(courses[1], "winter"), Quarter([], "spring")]
     plan = CoursePlan(quarters, completedCourses)
 
-    pCourses = [Course("CMPE", "16")];
     # preReq tuple
-    p5c = CourseTuple(3, [Course("CMPE", "16"), courses[0][0]], [CourseTuple(1, [courses[0][1], courses[][]], []), CourseTuple()])
+    p5c = CourseTuple(3, [Course("CMPE", "16"), courses[0][0]], [CourseTuple(3, [courses[0][1], courses[1][1], Course("CMPE", "17")], []), CourseTuple(1, [courses[0][2], courses[1][2]], [])])
+
 
     # print plan
     printCoursePlan(plan);
 
     # define course for testing
-    newCourse = Course("PHYS", "5C", "Intro to Cuntimatics", 5, [], [], [], {"fall":False, "winter":True, "spring":True})
+    newCourse = Course("PHYS", "5C", "Intro to Cuntimatics", 5, CourseTuple(), p5c, CourseTuple(), {"fall":False, "winter":True, "spring":True})
 
     # courseEval unit test 
     if courseEval(newCourse, plan, 19, 2):
