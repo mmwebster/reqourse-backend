@@ -186,32 +186,46 @@ def createCoursePlan(a1):
             if a1[j].numChildren > a1[j+1].numChildren:
                 a1[j], a1[j+1] = a1[j+1], a1[j]
 
-    print("Ordered courses")
+    # 4/5. Point each course to its parents
     for course in a1:
-        print("-" + course.subject + course.number)
+        # for each course in the preReqs
+        for child in course.preReqs.courses:
+            # if there are no parents yet, init the list
+            if len(child.parents) == 0:
+                child.parents = [course]
+            # otherwise append to the array
+            else:
+                child.parents.append(course)
+            # inc the num parents
+            child.numParents += 1
+        # for each course in the preReqs
+        for child in course.coReqs.courses:
+            # if there are no parents yet, init the list
+            if len(child.parents) == 0:
+                child.parents = [course]
+            # otherwise append to the array
+            else:
+                child.parents.append(course)
+            # inc the num parents
+            child.numParents += 1
 
-    # 4/5. Foreach course in A1, starting after 0 children
-    for course in a1:
-        if course.numChildren > 0:
-            # point all child pre-reqs to their parents
-            for child in course.preReqs.courses:
-                if not course in child.parents:
-                    child.parents.append(course)
-                    child.numParents += 1
-
-            # point all child co-reqs to their parents
-            for child in course.coReqs.courses:
-                if not (course in child.parents):
-                    child.parents.append(course)
-                    child.numParents += 1
-
-    for course in a1:
-        print(course.subject + course.number + "'s parents are")
-        for parent in course.parents:
-            print("  ->" + parent.subject + parent.number)
-
+    # print out parents of courses and num of parents
+    # for i in range(0, len(a1)):
+    #     print(a1[i].subject + a1[i].number + " - " + str(a1[i].numParents))
+        
     # 6. Now since all children are mapped to their parents, remove courses from the top level of A1 that have parents
+    a2 = []
+    for i in range(0, len(a1)):
+        # print("Course " + course.subject + course.number)
+        if a1[i].numParents == 0:
+            a2.append(a1[i])
+
+    # for i in range(0, len(a2)):
+    #     print(a2[i].subject + a2[i].number + " - " + str(a2[i].numParents))
+    print("")
+
     # 7. Recursively sort by # of children (pre and co) from least to most.
+    
     # 8. BFS on A1 starting at imaginary root course. Push element elements in a stack as they appear (as S1)
     # Course passes eval?
     # 9. Pop course off of the stack (S1) and insert into the course plan. Remove course from each of its parents in the A1
