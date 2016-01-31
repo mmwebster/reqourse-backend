@@ -21,7 +21,7 @@ class CourseTuple:
         self.courseTuples = courseTuples
 
 class Course:
-    def __init__(self, subject = "", number = "", title = "", units = 0, preReqs = CourseTuple(), coReqs = CourseTuple(), concurrentReqs = [], seasonsOffered = {"fall": False, "winter": False, "spring": False}):
+    def __init__(self, subject = "", number = "", title = "", units = 0, preReqs = CourseTuple(), coReqs = CourseTuple(), concurrentReqs = [], seasonsOffered = {"fall": False, "winter": False, "spring": False}, numChildren = 0, parents = [], numParents = 0, totalChildren = 0):
         self.subject = subject
         self.number = number
         self.title = title
@@ -30,6 +30,15 @@ class Course:
         self.coReqs = coReqs
         self.concurrentReqs = concurrentReqs
         self.seasonsOffered = seasonsOffered # default to false
+        self.numChildren = numChildren
+        self.parents = parents
+        self.numParents = numParents
+        self.totalChildren = totalChildren
+    def hasChildren(self):
+        if len(self.preReqs) > 0 or len(self.coReqs) > 0:
+            return True
+        else:
+            return False
 
 class Quarter:
     def __init__(self, courses = [], season = ""):
@@ -156,9 +165,58 @@ def courseEval(newCourse, currentPlan, maxUnits, currentQuarter, concurrentCours
     if totalUnits > currentPlan.maxUnits:
         return False
 
-
     # At very end if none of the conditions fail
     return True
+
+
+# @param a1 is the required coursework to create a plan for
+def createCoursePlan(a1):
+    # 1. get a1 as top level ANDed single-dim array, and where it only contains ANDed pre-reqs
+    # assert isinstance(a1, CourseTuple) 
+    # 2. Count number of children (pre/co) for each course in A1
+    for course in a1:
+        for preReq in course.preReqs.courses:
+            course.numChildren += 1
+        for coReq in course.coReqs.courses:
+            course.numChildren += 1
+
+    # 3. Sort A1 from least to most reqs (children) with bubblesort (quicksort is adv.)
+    for i in range(len(a1)):
+        for j in range(len(a1)-1-i):
+            if a1[j].numChildren > a1[j+1].numChildren:
+                a1[j], a1[j+1] = a1[j+1], a1[j]
+
+    print("Ordered courses")
+    for course in a1:
+        print("-" + course.subject + course.number)
+
+    # 4/5. Foreach course in A1, starting after 0 children
+    for course in a1:
+        if course.numChildren > 0:
+            # point all child pre-reqs to their parents
+            for child in course.preReqs.courses:
+                if not course in child.parents:
+                    child.parents.append(course)
+                    child.numParents += 1
+
+            # point all child co-reqs to their parents
+            for child in course.coReqs.courses:
+                if not (course in child.parents):
+                    child.parents.append(course)
+                    child.numParents += 1
+
+    for course in a1:
+        print(course.subject + course.number + "'s parents are")
+        for parent in course.parents:
+            print("  ->" + parent.subject + parent.number)
+
+    # 6. Now since all children are mapped to their parents, remove courses from the top level of A1 that have parents
+    # 7. Recursively sort by # of children (pre and co) from least to most.
+    # 8. BFS on A1 starting at imaginary root course. Push element elements in a stack as they appear (as S1)
+    # Course passes eval?
+    # 9. Pop course off of the stack (S1) and insert into the course plan. Remove course from each of its parents in the A1
+    # 10. Perform 7-9 for every quarter until all courses from A1 have been assigned quarters that work
+    
 
     
     
@@ -201,6 +259,32 @@ def main():
             print("Course eval succeeded.")
     else:
         print("Course eval failed.")
+
+
+    # courses[0][0].preReqs = CourseTuple(1, [courses[1][1], courses[0][1], courses[0][1]],[])
+    # courses[1][0].preReqs  = CourseTuple(1, [courses[1][1], courses[0][1]], [])
+    
+    cmpe16 = Course("CMPE", "16")
+    cmpe16.preReqs = CourseTuple(1, [], [])
+
+    cmpe17 = Course("CMPE", "17")
+    cmpe17.preReqs = CourseTuple(1, [cmpe16], [])
+
+    cmpe18 = Course("CMPE", "18")
+    cmpe18.preReqs = CourseTuple(1, [cmpe17], [])
+
+    cmpe19 = Course("CMPE", "19")
+    cmpe19.preReqs = CourseTuple(1, [cmpe16, cmpe18], [])
+
+    cmpe20 = Course("CMPE", "20")
+    cmpe20.preReqs = CourseTuple(1, [cmpe16, cmpe17, cmpe18, cmpe19], [])
+
+    math24 = Course("MATH", "24")
+    math24.preReqs = CourseTuple(1, [], [])
+
+    a1 = [cmpe16, cmpe17, cmpe18, cmpe19, cmpe20, math24]
+    createCoursePlan(a1)
+    
 
 
 
