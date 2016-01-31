@@ -74,11 +74,21 @@ def parseTuple(tup):
     assert type(tup[2]) == list
     for item in tup[2]:
         x.coursetuples.append(parseTuple(item))
-    tuplelist.append(x)
+    #tuplelist.append(x)
     printTuple(x)
     return x
     
 def printTuple(x):
     print(str(x.num)+str(x.courses)+str(x.coursetuples))
+    
+        
 
 parse('courses.txt')
+
+
+
+
+
+
+
+
