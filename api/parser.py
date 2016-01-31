@@ -2,7 +2,7 @@ from ast import literal_eval
 
 
 class Course:
-    def __init__(self, subject="", number="", title="", units="", prereqs="", concurrent="", coreqs=""):
+    def __init__(self, subject="", number="", title="", units="", prereqs="", concurrent="", coreqs="", offered={'f'=False,'w'=False,'s'=False}):
         self.subject = subject
         self.number = number
         self.title = title
@@ -10,6 +10,7 @@ class Course:
         self.prereqs = prereqs
         self.concurrent = concurrent
         self.coreqs = coreqs
+        self.offered = offered
 
 class CourseTuple:
     def __init__(self, num="", courses = [], coursetuples = []):
@@ -40,6 +41,18 @@ def parse(file):
         x.prereqs = line.split(';')[4]
         x.concurrent = line.split(';')[5]
         x.coreqs = line.split(';')[6]
+        x.offered = line.split(';')[7]
+        d = {}
+        if any(c == 'f' for c in x.offered):
+            d['f'] = True
+        
+        if any(c == 'w' for c in x.offered):
+            d['w'] = True
+        
+        if any(c == 's' for c in x.offered):
+            d['s'] = True
+
+        x.offered = d
 
         courselist[x.subject+x.number] = x
 
