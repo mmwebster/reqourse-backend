@@ -14,14 +14,16 @@
 ########################
 # Class definitions
 ########################
+
 class CourseTuple:
     def __init__(self, numRequired = 0, courses = [], courseTuples = []):
         self.numRequired = numRequired
         self.courses = courses
         self.courseTuples = courseTuples
+       
 
 class Course:
-    def __init__(self, subject = "", number = "", title = "", units = 0, preReqs = CourseTuple(), coReqs = CourseTuple(), concurrentReqs = [], seasonsOffered = {"fall": False, "winter": False, "spring": False}, numChildren = 0, parents = [], numParents = 0, totalChildren = 0):
+    def __init__(self, subject = "", number = "", title = "", units = 0, preReqs = CourseTuple(), coReqs = CourseTuple(), concurrentReqs = [], seasonsOffered = {"fall": False, "winter": False, "spring": False}, numChildren = 0, parents = [], children = [], numParents = 0, totalChildren = 0):
         self.subject = subject
         self.number = number
         self.title = title
@@ -32,13 +34,17 @@ class Course:
         self.seasonsOffered = seasonsOffered # default to false
         self.numChildren = numChildren
         self.parents = parents
+        self.children = children
         self.numParents = numParents
         self.totalChildren = totalChildren
     def hasChildren(self):
-        if len(self.preReqs) > 0 or len(self.coReqs) > 0:
+        if len(self.children) > 0:
             return True
         else:
             return False
+    # def getChildren(self):
+    #     l = self.preReqs.courses
+    #     return convert(l.extend(self.coReqs.courses), Course)
 
 class Quarter:
     def __init__(self, courses = [], season = ""):
@@ -169,6 +175,44 @@ def courseEval(newCourse, currentPlan, maxUnits, currentQuarter, concurrentCours
     return True
 
 
+
+# @param node is head of current component to sort
+def sortTree(course, x):
+    x += 1
+    if (x > 200):
+        return
+    # determine the weights of the direct descendents and those all the way down the tree
+    for child in course.children:
+        print(child.subject + child.number)
+        if child.hasChildren():
+            numChildren = sortTree(child, x)
+            child.totalChildren = numChildren
+            course.totalChildren += numChildren
+        else:
+            course.totalChildren += 1
+
+    # bubble sort at the current level, account for the weight of all branches and leaves bellow
+    # for i in range(len(course.children)):
+    #     for j in range(len(course.children)-1-i):
+    #         if course.children[j].totalChildren > course.children[j+1].totalChildren:
+    #             course.children[j], course.children[j+1] = course.children[j+1], course.children[j]
+
+    # return the total # children
+    return course.totalChildren
+
+
+
+def printTree(head):
+    print(head.subject + head.number + ", num: " + str(head.numChildren))
+    for course in head.children:
+        printTree(course)
+
+def display(n):
+    if(n > 1):
+        display(n-1)
+    print(n)
+
+
 # @param a1 is the required coursework to create a plan for
 def createCoursePlan(a1):
     # 1. get a1 as top level ANDed single-dim array, and where it only contains ANDed pre-reqs
@@ -177,8 +221,10 @@ def createCoursePlan(a1):
     for course in a1:
         for preReq in course.preReqs.courses:
             course.numChildren += 1
+            course.children.append(preReq)
         for coReq in course.coReqs.courses:
             course.numChildren += 1
+            course.children.append(coReq)
 
     # 3. Sort A1 from least to most reqs (children) with bubblesort (quicksort is adv.)
     for i in range(len(a1)):
@@ -187,45 +233,71 @@ def createCoursePlan(a1):
                 a1[j], a1[j+1] = a1[j+1], a1[j]
 
     # 4/5. Point each course to its parents
-    for course in a1:
-        # for each course in the preReqs
+    for curCourse in a1:
+        # for child in course.children:
+        #     child.parents.append(course)
+        #     child.numParents += 1
+        #     print("parent is -->" + child.parents + "numParents is -->" + str(child.numParents)
+        
         for child in course.preReqs.courses:
             # if there are no parents yet, init the list
             if len(child.parents) == 0:
-                child.parents = [course]
+                child.parents = []
+                print("3")
+
             # otherwise append to the array
             else:
                 child.parents.append(course)
             # inc the num parents
             child.numParents += 1
+            print("4")
         # for each course in the preReqs
         for child in course.coReqs.courses:
             # if there are no parents yet, init the list
             if len(child.parents) == 0:
-                child.parents = [course]
+                child.parents = []
+                print("3")
+
             # otherwise append to the array
             else:
                 child.parents.append(course)
             # inc the num parents
             child.numParents += 1
+            print("4")
 
-    # print out parents of courses and num of parents
-    # for i in range(0, len(a1)):
-    #     print(a1[i].subject + a1[i].number + " - " + str(a1[i].numParents))
-        
+            
+        #print(course.preReqs.courses)
+
+     # print out parents of courses and num of parents
+     # for i in range(0, len(a1)):
+     #     print(a1[i].subject + a1[i].number + " - " + str(a1[i].numParents))
+     # for course in a1:
+     #    for par in child.parents:
+     #        print(par)
+
     # 6. Now since all children are mapped to their parents, remove courses from the top level of A1 that have parents
-    a2 = []
+    a2 = []    
     for i in range(0, len(a1)):
         # print("Course " + course.subject + course.number)
         if a1[i].numParents == 0:
             a2.append(a1[i])
 
+    # 6.5 Create major node
+    head = Course()
+    head.children = a2
+
     # for i in range(0, len(a2)):
     #     print(a2[i].subject + a2[i].number + " - " + str(a2[i].numParents))
-    print("")
+
+    #printTree(head)
+    # display(5)
 
     # 7. Recursively sort by # of children (pre and co) from least to most.
-    
+    # sortTree(head, 0)
+
+    for i in range(0, len(head.children)):
+        print(head.children[i].subject + head.children[i].number + " - " + str(head.children[i].numParents))
+
     # 8. BFS on A1 starting at imaginary root course. Push element elements in a stack as they appear (as S1)
     # Course passes eval?
     # 9. Pop course off of the stack (S1) and insert into the course plan. Remove course from each of its parents in the A1
@@ -244,8 +316,8 @@ def main():
     # prev taken coursework
     completedCourses = [Course("MATH", "21")];
     courses = [
-            [Course("AMS", "10", "Applied Bullshit", 5), Course("PHYS", "5A", "Intro to Cuntimatics", 5), Course("PHYS", "5L", "Intro to Cuntimatics, Lab", 1)], 
-            [Course("AMS", "20", "Applied Bullshit", 5), Course("PHYS", "5B", "Intro to Cuntimatics", 5), Course("PHYS", "5M", "Intro to Cuntimatics, Lab", 2)]
+            [Course("AMS", "10", "Applied Mathematics", 5), Course("PHYS", "5A", "Intro to Kinematics", 5), Course("PHYS", "5L", "Intro to Cuntimatics, Lab", 1)], 
+            [Course("AMS", "20", "Applied Mathematics", 5), Course("PHYS", "5B", "Intro to Kinematics", 5), Course("PHYS", "5M", "Intro to Cuntimatics, Lab", 2)]
             ]
     quarters = [Quarter(courses[0], "fall"), Quarter(courses[1], "winter"), Quarter([Course("CMPE", "16")], "spring")]
     plan = CoursePlan(quarters, completedCourses, 19)
@@ -260,7 +332,7 @@ def main():
     printCoursePlan(plan);
 
     # define course for testing
-    newCourse = Course("PHYS", "5C", "Intro to Cuntimatics", 5, p5c, c5c, concurrent, {"fall":False, "winter":True, "spring":True})
+    newCourse = Course("PHYS", "5C", "Intro to Kinematics", 5, p5c, c5c, concurrent, {"fall":False, "winter":True, "spring":True})
 
     # courseEval unit test 
     concurrentCourse = {"id": ""}
