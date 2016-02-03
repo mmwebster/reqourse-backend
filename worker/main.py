@@ -233,12 +233,13 @@ def createCoursePlan(a1):
                 a1[j], a1[j+1] = a1[j+1], a1[j]
 
     # 4/5. Point each course to its parents
-    for curCourse in a1:
+    for course in a1:
         # for child in course.children:
         #     child.parents.append(course)
         #     child.numParents += 1
         #     print("parent is -->" + child.parents + "numParents is -->" + str(child.numParents)
         
+        # for each course in the preReqs
         for child in course.preReqs.courses:
             # if there are no parents yet, init the list
             if len(child.parents) == 0:
@@ -250,8 +251,8 @@ def createCoursePlan(a1):
                 child.parents.append(course)
             # inc the num parents
             child.numParents += 1
-            print("4")
-        # for each course in the preReqs
+            print("->" + child.parents[len(child.parents)].subject + child.parents[len(child.parents)].number)
+        # for each course in the coReqs
         for child in course.coReqs.courses:
             # if there are no parents yet, init the list
             if len(child.parents) == 0:
@@ -316,8 +317,8 @@ def main():
     # prev taken coursework
     completedCourses = [Course("MATH", "21")];
     courses = [
-            [Course("AMS", "10", "Applied Mathematics", 5), Course("PHYS", "5A", "Intro to Kinematics", 5), Course("PHYS", "5L", "Intro to Cuntimatics, Lab", 1)], 
-            [Course("AMS", "20", "Applied Mathematics", 5), Course("PHYS", "5B", "Intro to Kinematics", 5), Course("PHYS", "5M", "Intro to Cuntimatics, Lab", 2)]
+            [Course("AMS", "10", "Applied Mathematics", 5), Course("PHYS", "5A", "Intro to Kinematics", 5), Course("PHYS", "5L", "Intro to Kinematics, Lab", 1)],
+            [Course("AMS", "20", "Applied Mathematics", 5), Course("PHYS", "5B", "Intro to Kinematics", 5), Course("PHYS", "5M", "Intro to Kinematics, Lab", 2)]
             ]
     quarters = [Quarter(courses[0], "fall"), Quarter(courses[1], "winter"), Quarter([Course("CMPE", "16")], "spring")]
     plan = CoursePlan(quarters, completedCourses, 19)
