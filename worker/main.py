@@ -1,390 +1,216 @@
-########################
+#####################################################################################
 # GENERAL NOTES
-########################
-# 1. All collections of items will be referred to as "ordered sets" or "unordered sets" so as to not confuse with python data types (both core and other)
-# 2. Seasons not currently being used
-# 3. Remember: python has lists, tuples, and dictionaries. Lists are ordered, numerically-index, sets. Tuples are the same but immutable after initialization. Dictionaries are unordered, alpha-indexed, sets corresponding to key->value pairs.
-# 4. There are always two unordered sets of courses, the main dictionary of courses offered at college (pulled directly from db and is immutable afterwards), and some CourseSet being used for some task. The program is passed a single requirements CourseSet for the major (only one supported for now), then it removes courses or associated courseSets that have already been satisfied, and then uses the main dictionary of courses when it needs information about a course.
+#####################################################################################
+# 1. Course tuples were removed and now referred to as nodes (but aren't entirely the same)
+# 2. Style guidelines: For every new section, enclose the same hash formation as seen elsewhere, for every new class or function definition enclose with the same asterisks seen elsewhere. The end of a section should be followed by three new lines, while the everywhere else different component should be delimited a single new line.
 
-########################
+
+
+#####################################################################################
 # Enum definitions
-########################
-# @desc currently not being used, was previously not syntactically correct. Can probably reference by just Seasons.fall, etc.
-# class Seasons:
-#     fall = False
-#     winter = False
-#     spring = False
+#####################################################################################
+
+# ***********************************************************************************
+# @desc currently not being used, was previously not syntactically correct. Can probably reference 
+#       by just Seasons.fall, etc.
+# ***********************************************************************************
+class Seasons:
+    fall = False
+    winter = False
+    spring = False
+
+# ***********************************************************************************
+# @desc The type of relationship between a node and its parent (only one parent)
+# ***********************************************************************************
+class ParentRel:
+    pre = False
+    co = False
+    concurrent = False # not taking into account in most situations
 
 
-########################
+
+#####################################################################################
 # Class definitions
-########################
+#####################################################################################
 
-# @desc An unordered collection of courses associated by a `numRequired`. This recursive data type allows for the infinite nesting of these sets w/ relationships.
-#       This means that `numRequired` items must be satisfied from the total, combined, courses and course sets.
-# @param numRequired The number of items required in this collection
-# @param courses The top level courses in collection on which is applied the `numRequired` value
-# @param courseSets The recursively dependent other collections, for which the top level is applied the `numRequired` value
-class CourseSet:
-    def __init__(self, numRequired = 0, courses = [], courseSets = []):
+# ***********************************************************************************
+# @desc A basic queue implementation
+# ***********************************************************************************
+class Queue:
+    def __init__(self):
+        self.items = []
+    def isEmpty(self):
+        return self.items == []
+    def enqueue(self, item):
+        self.item.insert(0, item) # pushes new element to "end" of queue
+    def dequeue(self):
+        return self.items.pop()
+    def size(self):
+        return len(self.items)
+
+# ***********************************************************************************
+# @desc A node in one of the course-dependent trees; acts like a container for courses that may or
+#       may not be filled.
+# @param children All child nodes
+# @param numRequired The number of the children that must be satisfied in the tree to take this course
+# @param course A single course definition (optional) for this node
+# @param parentRel The type of relationship the course in this node and that in its parent. Must be of
+#        type ParentRel. (optional..not used if does not contain course)
+# ***********************************************************************************
+class Node:
+    def __init__(self, children = [], numRequired, course = None, parentRel = ParentRel()):
+        self.children = children
         self.numRequired = numRequired
-        self.courses = courses
-        self.courseSets = courseSets
-       
+        self.course = course
+        self.relType = relType
 
-# @desc A single, standalone course offered at a college.
-# MUST refactor to consolidate the properties (believe there are overlaps)
+# ***********************************************************************************
+# @desc A single course and its attributes
+# @param subject The subject code (string) used to catagorize the course by
+# @param number The number used to uniquely identify a course within a subject
+# @param title The name of the course as it is displayed and used
+# @param seasonsOffered A dictionary with [season name]->[boolean] pairs...when the course is offered
+# ***********************************************************************************
 class Course:
-    def __init__(self, subject = "", number = "", title = "", units = 0, preReqs = CourseSet(), \
-            coReqs = CourseSet(), concurrentReqs = [], seasonsOffered = {"fall": False, "winter": False, "spring": False}, \
-            numChildren = 0, parents = [], children = [], numParents = 0, totalChildren = 0):
+    def __init__(self, subject, number, title, units, seasonsOffered = {}):
         self.subject = subject
         self.number = number
         self.title = title
         self.units = units
-        self.preReqs = preReqs
-        self.coReqs = coReqs
-        self.concurrentReqs = concurrentReqs
-        self.seasonsOffered = seasonsOffered # default to false
-        self.numChildren = numChildren
-        self.parents = parents
-        self.children = children
-        self.numParents = numParents
-        self.totalChildren = totalChildren
-    def hasChildren(self):
-        if len(self.children) > 0:
+        self.seasonsOffered = seasonsOffered
+
+# ***********************************************************************************
+# @desc A single quarter in the Timeline
+# @param courses An array of courses inserted into the specific quarter
+# @param season A string containing the season this quarter is in..used with course season dict.
+# @param maxUnits the max number of units desired for this quarter
+# ***********************************************************************************
+class Quarter:
+    def __init__(self, courses = [], season = None, maxUnits = 20):
+        assert all(isinstance(course, Course) for course in courses)
+        self.courses = courses
+        self.season = season
+        self.maxUnits = maxUnits
+    # @desc Returns the total number of units currently stored in this quarter
+    def getUnits(self):
+        totalUnits = 0
+        for course in self.courses:
+            totalUnits += course.units
+        return totalUnits
+
+# ***********************************************************************************
+# @desc The planned out courses in their quarter with respect their seasons
+# @param quarters Contains of the currently planned out quarters
+# @param completedCourses Contains a bucket (dictionary) of all completed courses in the format 
+#        [cid]->[course]
+# @param currentQuarter Index of the quarter the user is currently in..this might be unecessary
+# ***********************************************************************************
+class Timeline:
+    def __init__(self, quarters = [], completedCourses = {}, currentQuarter = 0):
+        assert all(isinstance(quarter, Quarter) for quarter in quarters)
+        self.quarters = quarters
+        self.completed = completed
+        self.currentQuarter = currentQuarter
+    # @desc Return the # of populated quarters
+    def getNumQuarters(self):
+        return len(self.quarters)
+    # @desc Returns a boolean of whether or not the passed quarter has been completed
+    # @param course The course to test for having been completed
+    def isCompleted(self, course):
+        cid = course.subject + str(course.number)
+        if cid in self.completedCourses:
             return True
         else:
             return False
 
-class Quarter:
-    def __init__(self, courses = [], season = ""):
-        self.courses = courses
-        self.season = season
-    # get total num of units in quarter
-    def getUnits(self):
-        n = 0
-        for course in self.courses:
-            n += course.units
-        return n
-            
-class CoursePlan:
-    # @param completed is an array of completed courses (or equivalent)
-    def __init__(self, quarters = [], completed = [], maxUnits = 20):
-        assert all(isinstance(quarter, Quarter) for quarter in quarters)
-        self.quarters = quarters
-        self.completed = completed
-        self.maxUnits = maxUnits
-    # get # of filled quarters
-    def getNumQuarters(self):
-        return len(self.quarters)
-    def isCompleted(self, course):
-        for completedCourse in self.completed:
-            completedId = completedCourse.subject + completedCourse.number
-            courseId = course.subject + course.number
-            if completedId == courseId:
-                return True
-        return False
 
 
-
-
-########################
+#####################################################################################
 # Function definitions
-########################
+#####################################################################################
 
-# used for checking pre-reqs AND co-reqs
-# return true if course is in plan, checking up until quarter [endIndex]
-# @param offset is the number of quarters from the end of the plan at which it stops searching
-def courseInPlan(course, plan, offset):
-    # inspect every quarter in plan
-    for i in range(0, len(plan.quarters)-offset):
-        # inspect every course in quarter
-        for prevCourse in plan.quarters[i].courses:
-            idPrevCourse = prevCourse.subject + prevCourse.number
-            idCourse = course.subject + course.number
-            if idPrevCourse == idCourse:
-                return True
-    return False
-
-# return true if the course set is satisfied, given the current plan and offset (quarters from the current quarter to cut the check sort)
-def satisfied(plan, courseSet, offset):
-    if courseSet.numRequired == 0:
+# ***********************************************************************************
+# @desc Used for ensuring that a courses pre-reqs and co-reqs have been satisfied during individual course eval
+# @param course The course to search for that must be satisfied
+# @param timeline A reference to the currently planned out timeline
+# @param reqType The type of requirement.."pre" or "co" 
+# ***********************************************************************************
+def courseSatisfied(course, timeline, reqType):
+    cid = course.subject + str(course.number)
+    # first check completedCourses in timeline
+    if cid in timeline.completedCourses:
         return True
-    numSatisfied = 0
-    for course in courseSet.courses:
-        if plan.isCompleted(course) or courseInPlan(course, plan, offset):
-            numSatisfied += 1
-        if numSatisfied >= courseSet.numRequired:
-            return True
-    for nestedSet in courseSet.courseSets:
-        if satisfied(plan, nestedSet, offset):
-            numSatisfied += 1
-        if numSatisfied >= courseSet.numRequired:
-            return True
+    else:
+        # now check the previous quarter based on reqType
+        offset = 1 if reqType == "pre" else 0
+        # inspect every quarter in plan
+        for i in range(0, len(timeline.quarters)-offset):
+            # inspect every course in quarter
+            for prevCourse in timeline.quarters[i].courses:
+                prevCid = prevCourse.subject + str(prevCourse.number)
+                if prevCid == cid:
+                    return True
     return False
 
-# print out a single course plan
-def printCoursePlan(plan):
-    assert isinstance(plan, CoursePlan)
-    print("Plan:")
-    for i in range(len(plan.quarters)):
-        print(" Qtr " + str(i + 1) + ", " + str(plan.quarters[i].getUnits()) + " unit(s)")
-        for course in plan.quarters[i].courses:
-            print(" -" + course.subject + str(course.number))
+# ***********************************************************************************
+# @desc Prints out every quarter in the timeline and every course within every quarter
+# @param timeline The timeline to print out
+# ***********************************************************************************
+def printTimeline(timeline):
+    assert isinstance(timeline, Timeline)
+    print("Timeline:")
+    for i in range(len(timeline.quarters)):
+        print(" Qtr " + str(i + 1) + ", " + str(timeline.quarters[i].getUnits()) + " units(s)")
+        for course in timeline.quarters[i].courses:
+            print(" -" + course.subject + str(courses.number))
 
+# ***********************************************************************************
+# @desc Print out a tree given the head node. This is meant for a tree of the Node class. Uses a BFS implementation.
+# ***********************************************************************************
+def printTree(node):
+    assert isinstance(node, Node)
+    queue = Queue()
+    newline = "newline" # used to add newlines between each row of tree
+    queue.enqueue(node)
 
-
-# Evaluation of an individual course, for whether or not it passes the constraints
-def courseEval(newCourse, currentPlan, maxUnits, currentQuarter, concurrentCourse):
-    # confirm correct type
-    assert isinstance(newCourse, Course)
-    assert isinstance(currentPlan, CoursePlan)
-    assert type(maxUnits) == int
-    assert type(currentQuarter) == int
-
-    # 1. course already placed in plan?
-    if courseInPlan(newCourse, currentPlan, 0):
-        print("New course has already been placed.")
-        return False
-
-    # 2. is it offered this quarter?
-    currentSeason = currentPlan.quarters[currentQuarter].season
-    if not newCourse.seasonsOffered[currentSeason]:
-        print("New course is not offered this quarter.")
-        return False
-
-    # 3. All pre-reqs satisfied? 
-    # @param offset=1 b/c checking pre-reqs so must be 1 qtr back
-    print("Checking if preReqs satisfied for " + newCourse.subject + newCourse.number)
-    if not satisfied(currentPlan, newCourse.preReqs, 1):
-        return False
-
-    # 4. All co-reqs satisfied? 
-    # @param offset=0 b/c checking co-reqs so course can be in current quarter. This works b/c coReqs in the A1 tree are listed as dependent on the courses that they satisfy so the breadth first search will pull them out first and then they will be in the plan (if they worked) prior to checking if the course that can use it as a co-req works.
-    print("Checking if coReqs satisfied for " + newCourse.subject + newCourse.number)
-    if not satisfied(currentPlan, newCourse.coReqs, 0):
-        return False
-
-    totalUnits = currentPlan.quarters[currentQuarter].getUnits()
-
-    # 5. Determine if there's a concurrent-req and sum units for newCourse and/(or not and) concurrent course
-    if len(newCourse.concurrentReqs) > 0:
-        # add to total units that of the two concurrent-req courses
-        units = newCourse.concurrentReqs[0].units + newCourse.units
-        totalUnits += units
-        concurrentCourse["id"] = newCourse.concurrentReqs[0].subject + newCourse.concurrentReqs[0].number
-    else:
-        # add just the units of the og course
-        totalUnits += newCourse.units
-
-    # 6. Check if exceeded max num of units
-    if totalUnits > currentPlan.maxUnits:
-        return False
-
-    # At very end if none of the conditions fail
-    return True
-
-
-
-# @param node is head of current component to sort
-def sortTree(course, x):
-    x += 1
-    if (x > 200):
-        return
-    # determine the weights of the direct descendents and those all the way down the tree
-    for child in course.children:
-        print(child.subject + child.number)
-        if child.hasChildren():
-            numChildren = sortTree(child, x)
-            child.totalChildren = numChildren
-            course.totalChildren += numChildren
+    # proceed with BFS, printing element along the way
+    while not queue.isEmpty():
+        queue.enqueue(newline) # add newline at end of prev row
+        n = queue.dequeue()
+        if n is newline:
+            print # print newline
         else:
-            course.totalChildren += 1
-
-    # bubble sort at the current level, account for the weight of all branches and leaves bellow
-    # for i in range(len(course.children)):
-    #     for j in range(len(course.children)-1-i):
-    #         if course.children[j].totalChildren > course.children[j+1].totalChildren:
-    #             course.children[j], course.children[j+1] = course.children[j+1], course.children[j]
-
-    # return the total # children
-    return course.totalChildren
+            print n.course.subject + str(n.course.number),
+            # queue every child of n
+            for child in n.children:
+                n.enqueue(child)
 
 
 
-def printTree(head):
-    print(head.subject + head.number + ", num: " + str(head.numChildren))
-    for course in head.children:
-        printTree(course)
-
-def display(n):
-    if(n > 1):
-        display(n-1)
-    print(n)
-
-
-# @param a1 is the required coursework to create a plan for
-def createCoursePlan(a1):
-    # 1. get a1 as top level ANDed single-dim array, and where it only contains ANDed pre-reqs
-    # assert isinstance(a1, CourseSet)
-    # 2. Count number of children (pre/co) for each course in A1
-    for course in a1:
-        for preReq in course.preReqs.courses:
-            course.numChildren += 1
-            course.children.append(preReq)
-        for coReq in course.coReqs.courses:
-            course.numChildren += 1
-            course.children.append(coReq)
-
-    # 3. Sort A1 from least to most reqs (children) with bubblesort (quicksort is adv.)
-    for i in range(len(a1)):
-        for j in range(len(a1)-1-i):
-            if a1[j].numChildren > a1[j+1].numChildren:
-                a1[j], a1[j+1] = a1[j+1], a1[j]
-
-    # 4/5. Point each course to its parents
-    for course in a1:
-        # for child in course.children:
-        #     child.parents.append(course)
-        #     child.numParents += 1
-        #     print("parent is -->" + child.parents + "numParents is -->" + str(child.numParents)
-        
-        # for each course in the preReqs
-        for child in course.preReqs.courses:
-            # if there are no parents yet, init the list
-            if len(child.parents) == 0:
-                child.parents = []
-                print("3")
-
-            # otherwise append to the array
-            else:
-                child.parents.append(course)
-            # inc the num parents
-            child.numParents += 1
-            print("->" + child.parents[len(child.parents)].subject + child.parents[len(child.parents)].number)
-        # for each course in the coReqs
-        for child in course.coReqs.courses:
-            # if there are no parents yet, init the list
-            if len(child.parents) == 0:
-                child.parents = []
-                print("3")
-
-            # otherwise append to the array
-            else:
-                child.parents.append(course)
-            # inc the num parents
-            child.numParents += 1
-            print("4")
-
-            
-        #print(course.preReqs.courses)
-
-     # print out parents of courses and num of parents
-     # for i in range(0, len(a1)):
-     #     print(a1[i].subject + a1[i].number + " - " + str(a1[i].numParents))
-     # for course in a1:
-     #    for par in child.parents:
-     #        print(par)
-
-    # 6. Now since all children are mapped to their parents, remove courses from the top level of A1 that have parents
-    a2 = []    
-    for i in range(0, len(a1)):
-        # print("Course " + course.subject + course.number)
-        if a1[i].numParents == 0:
-            a2.append(a1[i])
-
-    # 6.5 Create major node
-    head = Course()
-    head.children = a2
-
-    # for i in range(0, len(a2)):
-    #     print(a2[i].subject + a2[i].number + " - " + str(a2[i].numParents))
-
-    #printTree(head)
-    # display(5)
-
-    # 7. Recursively sort by # of children (pre and co) from least to most.
-    # sortTree(head, 0)
-
-    for i in range(0, len(head.children)):
-        print(head.children[i].subject + head.children[i].number + " - " + str(head.children[i].numParents))
-
-    # 8. BFS on A1 starting at imaginary root course. Push element elements in a stack as they appear (as S1)
-    # Course passes eval?
-    # 9. Pop course off of the stack (S1) and insert into the course plan. Remove course from each of its parents in the A1
-    # 10. Perform 7-9 for every quarter until all courses from A1 have been assigned quarters that work
-    
-
-    
-    
-
-
-########################
+#####################################################################################
 # Main
-########################
+#####################################################################################
 def main():
-    # init/create data structures
-    # prev taken coursework
-    completedCourses = [Course("MATH", "21")];
-    courses = [
-            [Course("AMS", "10", "Applied Mathematics", 5), Course("PHYS", "5A", "Intro to Kinematics", 5), Course("PHYS", "5L", "Intro to Kinematics, Lab", 1)],
-            [Course("AMS", "20", "Applied Mathematics", 5), Course("PHYS", "5B", "Intro to Kinematics", 5), Course("PHYS", "5M", "Intro to Kinematics, Lab", 2)]
+    # create testing data
+    completedCourses = {"MATH21": Course("MATH", "21", None, 5)};
+    courses = [ \
+            Course("AMS", "10", None, 5, {"fall":True, "winter":True, "spring":False}), \
+            Course("PHYS", "5A", None, 5), \
+            Course("PHYS", "5L", None, 1), \
+            Course("AMS", "20", None, 5), \
+            Course("PHYS", "5B", None, 5), \
+            Course("PHYS", "5M", None, 1) \
             ]
-    quarters = [Quarter(courses[0], "fall"), Quarter(courses[1], "winter"), Quarter([Course("CMPE", "16")], "spring")]
-    plan = CoursePlan(quarters, completedCourses, 19)
+    quarters = [ \
+            Quarter(courses[0:2], "fall", 19), \
+            Quarter(courses[3:5], "winter", 19), \
+            Quarter([], "spring", 19) \
+            ]
+    timeline = Timeline(quarters, completedCourses)
 
-    # preReq set
-    p5c = CourseSet(2, [], [CourseSet(2, [courses[0][1], courses[1][1]], []), CourseSet(1, [courses[0][2], courses[1][2]], [])])
-    c5c = CourseSet(2, [Course("CMPE", "16"), courses[0][0]], [])
-    concurrent = [Course("PHYS", "5N")]
+    # print timeline
+    printTimeline(timeline);
 
-
-    # print plan
-    printCoursePlan(plan);
-
-    # define course for testing
-    newCourse = Course("PHYS", "5C", "Intro to Kinematics", 5, p5c, c5c, concurrent, {"fall":False, "winter":True, "spring":True})
-
-    # courseEval unit test 
-    concurrentCourse = {"id": ""}
-    if courseEval(newCourse, plan, 19, 2, concurrentCourse):
-        # check if concurrent course was added
-        if concurrentCourse["id"]:
-            # add the concurrent course by its unique id (look up in the dictionary)
-            print("Course eval succeeded. And added conccurent course " + concurrentCourse["id"] + ".")
-        else:
-            print("Course eval succeeded.")
-    else:
-        print("Course eval failed.")
-
-
-    # courses[0][0].preReqs = CourseSet(1, [courses[1][1], courses[0][1], courses[0][1]],[])
-    # courses[1][0].preReqs  = CourseSet(1, [courses[1][1], courses[0][1]], [])
-    
-    cmpe16 = Course("CMPE", "16")
-    cmpe16.preReqs = CourseSet(1, [], [])
-
-    cmpe17 = Course("CMPE", "17")
-    cmpe17.preReqs = CourseSet(1, [cmpe16], [])
-
-    cmpe18 = Course("CMPE", "18")
-    cmpe18.preReqs = CourseSet(1, [cmpe17], [])
-
-    cmpe19 = Course("CMPE", "19")
-    cmpe19.preReqs = CourseSet(1, [cmpe16, cmpe18], [])
-
-    cmpe20 = Course("CMPE", "20")
-    cmpe20.preReqs = CourseSet(1, [cmpe16, cmpe17, cmpe18, cmpe19], [])
-
-    math24 = Course("MATH", "24")
-    math24.preReqs = CourseSet(1, [], [])
-
-    a1 = [cmpe16, cmpe17, cmpe18, cmpe19, cmpe20, math24]
-    createCoursePlan(a1)
-    
-
-
-
+    # createTimeline(...)
 
 main()
