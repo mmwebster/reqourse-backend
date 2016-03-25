@@ -42,7 +42,7 @@ class Queue:
     def isEmpty(self):
         return self.items == []
     def enqueue(self, item):
-        self.item.insert(0, item) # pushes new element to "end" of queue
+        self.items.insert(0, item) # pushes new element to "end" of queue
     def dequeue(self):
         return self.items.pop()
     def size(self):
@@ -54,15 +54,15 @@ class Queue:
 # @param children All child nodes
 # @param numRequired The number of the children that must be satisfied in the tree to take this course
 # @param course A single course definition (optional) for this node
-# @param parentRel The type of relationship the course in this node and that in its parent. Must be of
-#        type ParentRel. (optional..not used if does not contain course)
+# @param parentRel The type of relationship between the course in this node and that in its parent. 
+#        Must be dict. [rel. type]->[boolean]. (optional..not used if does not contain course)
 # ***********************************************************************************
 class Node:
-    def __init__(self, children = [], numRequired, course = None, parentRel = ParentRel()):
+    def __init__(self, children = [], numRequired = 0, course = None, parentRel = {}):
         self.children = children
         self.numRequired = numRequired
         self.course = course
-        self.relType = relType
+        self.parentRel = parentRel
 
 # ***********************************************************************************
 # @desc A single course and its attributes
@@ -109,7 +109,7 @@ class Timeline:
     def __init__(self, quarters = [], completedCourses = {}, currentQuarter = 0):
         assert all(isinstance(quarter, Quarter) for quarter in quarters)
         self.quarters = quarters
-        self.completed = completed
+        self.completed = completedCourses
         self.currentQuarter = currentQuarter
     # @desc Return the # of populated quarters
     def getNumQuarters(self):
@@ -160,30 +160,46 @@ def printTimeline(timeline):
     assert isinstance(timeline, Timeline)
     print("Timeline:")
     for i in range(len(timeline.quarters)):
-        print(" Qtr " + str(i + 1) + ", " + str(timeline.quarters[i].getUnits()) + " units(s)")
+        print(" Qtr " + str(i + 1) + ", " + str(timeline.quarters[i].getUnits()) + " units(s), (" + timeline.quarters[i].season + ")")
         for course in timeline.quarters[i].courses:
-            print(" -" + course.subject + str(courses.number))
+            print(" -" + course.subject + str(course.number))
 
 # ***********************************************************************************
-# @desc Print out a tree given the head node. This is meant for a tree of the Node class. Uses a BFS implementation.
+# @desc Basic BFS implementation
 # ***********************************************************************************
-def printTree(node):
-    assert isinstance(node, Node)
-    queue = Queue()
-    newline = "newline" # used to add newlines between each row of tree
-    queue.enqueue(node)
+# def bfs(node):
+#     assert isinstance(node, Node)
+#     queue = Queue()
+#     queue.enqueue(node)
+#
+#     # proceed with BFS, printing element along the way
+#     while not queue.isEmpty():
+#         n = queue.dequeue()
+#         # !!!
+#         # DO SOMETHING W/ DATA
+#         # !!!
+#         # queue every child of n
+#         for child in n.children:
+#             queue.enqueue(child)
 
-    # proceed with BFS, printing element along the way
-    while not queue.isEmpty():
-        queue.enqueue(newline) # add newline at end of prev row
-        n = queue.dequeue()
-        if n is newline:
-            print # print newline
-        else:
-            print n.course.subject + str(n.course.number),
-            # queue every child of n
-            for child in n.children:
-                n.enqueue(child)
+# ***********************************************************************************
+# @desc Prints out a tree given the head node. Uses a BFS type implementation w/ mods.
+# @param head The head of the tree, of type Node
+# ***********************************************************************************
+def printTree(head):
+    currentLevel = [head]
+    while currentLevel:
+        nextLevel = []
+        for node in currentLevel:
+            if not node.course == None:
+                print "(numReq: " + str(node.numRequired) + ", cid: " + node.course.subject + str(node.course.number) + ")",
+            else:
+                print "(numReq: " + str(node.numRequired) + ", cid: )",
+
+            for child in node.children:
+                nextLevel.append(child)
+        print # add new line
+        currentLevel = nextLevel # proceed to next level
 
 
 
@@ -192,24 +208,53 @@ def printTree(node):
 #####################################################################################
 def main():
     # create testing data
-    completedCourses = {"MATH21": Course("MATH", "21", None, 5)};
-    courses = [ \
-            Course("AMS", "10", None, 5, {"fall":True, "winter":True, "spring":False}), \
-            Course("PHYS", "5A", None, 5), \
-            Course("PHYS", "5L", None, 1), \
-            Course("AMS", "20", None, 5), \
-            Course("PHYS", "5B", None, 5), \
-            Course("PHYS", "5M", None, 1) \
-            ]
+    # completedCourses = {"MATH21": Course("MATH", "21", None, 5)};
+    # courses = [ \
+    #         Course("AMS", "10", None, 5, {"fall":True, "winter":True, "spring":False}), \
+    #         Course("PHYS", "5A", None, 5), \
+    #         Course("PHYS", "5L", None, 1), \
+    #         Course("AMS", "20", None, 5), \
+    #         Course("PHYS", "5B", None, 5), \
+    #         Course("PHYS", "5M", None, 1) \
+    #         ]
+    completedCourses = {}
+    courses = {
+            "c4": Course("C", "4", None, 5),
+            "c5": Course("C", "5", None, 5),
+            "c6": Course("C", "6", None, 5),
+            "c7": Course("C", "7", None, 5),
+            "c8": Course("C", "8", None, 5),
+            "c9": Course("C", "9", None, 5),
+            "c10": Course("C", "10", None, 5),
+            "c11": Course("C", "11", None, 5),
+            "c12": Course("C", "12", None, 5),
+            "c13": Course("C", "13", None, 5)
+            }
     quarters = [ \
-            Quarter(courses[0:2], "fall", 19), \
-            Quarter(courses[3:5], "winter", 19), \
+            Quarter([], "fall", 19), \
+            Quarter([], "winter", 19), \
             Quarter([], "spring", 19) \
             ]
     timeline = Timeline(quarters, completedCourses)
 
     # print timeline
     printTimeline(timeline);
+
+    # 4. create the consolidated one-path tree (skipping prior steps)
+    head = Node([
+        Node([
+            Node([], 0, courses["c8"], {"pre":True}),
+            Node([
+                Node([], 0, courses["c10"], {"pre":True})
+                ], 1, courses["c11"], {"pre":True})
+            ], 1, courses["c5"], {"pre":True}), 
+        Node([
+            Node([], 0, courses["c10"], {"pre":True})
+            ], 1, courses["c7"], {"pre":True})
+        ], 2)
+
+    print 
+    printTree(head)
 
     # createTimeline(...)
 
