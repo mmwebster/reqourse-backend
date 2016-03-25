@@ -11,7 +11,7 @@
 #####################################################################################
 
 # ***********************************************************************************
-# @desc currently not being used, was previously not syntactically correct. Can probably reference 
+# @desc currently not being used, was previously not syntactically correct. Can probably reference
 #       by just Seasons.fall, etc.
 # ***********************************************************************************
 class Seasons:
@@ -54,7 +54,7 @@ class Queue:
 # @param children All child nodes
 # @param numRequired The number of the children that must be satisfied in the tree to take this course
 # @param course A single course definition (optional) for this node
-# @param parentRel The type of relationship between the course in this node and that in its parent. 
+# @param parentRel The type of relationship between the course in this node and that in its parent.
 #        Must be dict. [rel. type]->[boolean]. (optional..not used if does not contain course)
 # ***********************************************************************************
 class Node:
@@ -101,7 +101,7 @@ class Quarter:
 # ***********************************************************************************
 # @desc The planned out courses in their quarter with respect their seasons
 # @param quarters Contains of the currently planned out quarters
-# @param completedCourses Contains a bucket (dictionary) of all completed courses in the format 
+# @param completedCourses Contains a bucket (dictionary) of all completed courses in the format
 #        [cid]->[course]
 # @param currentQuarter Index of the quarter the user is currently in..this might be unecessary
 # ***********************************************************************************
@@ -133,7 +133,7 @@ class Timeline:
 # @desc Used for ensuring that a courses pre-reqs and co-reqs have been satisfied during individual course eval
 # @param course The course to search for that must be satisfied
 # @param timeline A reference to the currently planned out timeline
-# @param reqType The type of requirement.."pre" or "co" 
+# @param reqType The type of requirement.."pre" or "co"
 # ***********************************************************************************
 def courseSatisfied(course, timeline, reqType):
     cid = course.subject + str(course.number)
@@ -247,13 +247,13 @@ def main():
             Node([
                 Node([], 0, courses["c10"], {"pre":True})
                 ], 1, courses["c11"], {"pre":True})
-            ], 1, courses["c5"], {"pre":True}), 
+            ], 1, courses["c5"], {"pre":True}),
         Node([
             Node([], 0, courses["c10"], {"pre":True})
             ], 1, courses["c7"], {"pre":True})
         ], 2)
 
-    print 
+    print
     printTree(head)
 
     # createTimeline(...)
