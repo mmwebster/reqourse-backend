@@ -1,11 +1,16 @@
-# import data types
-# from ..utilities import dataTypes
-# from enum import Enum
+########################
+# GENERAL NOTES
+########################
+# 1. All collections of items will be referred to as "ordered sets" or "unordered sets" so as to not confuse with python data types (both core and other)
+# 2. Seasons not currently being used
+# 3. Remember: python has lists, tuples, and dictionaries. Lists are ordered, numerically-index, sets. Tuples are the same but immutable after initialization. Dictionaries are unordered, alpha-indexed, sets corresponding to key->value pairs.
+# 4. There are always two unordered sets of courses, the main dictionary of courses offered at college (pulled directly from db and is immutable afterwards), and some CourseSet being used for some task. The program is passed a single requirements CourseSet for the major (only one supported for now), then it removes courses or associated courseSets that have already been satisfied, and then uses the main dictionary of courses when it needs information about a course.
 
 ########################
 # Enum definitions
 ########################
-# class Season(Enum):
+# @desc currently not being used, was previously not syntactically correct. Can probably reference by just Seasons.fall, etc.
+# class Seasons:
 #     fall = False
 #     winter = False
 #     spring = False
@@ -15,15 +20,24 @@
 # Class definitions
 ########################
 
-class CourseTuple:
-    def __init__(self, numRequired = 0, courses = [], courseTuples = []):
+# @desc An unordered collection of courses associated by a `numRequired`. This recursive data type allows for the infinite nesting of these sets w/ relationships.
+#       This means that `numRequired` items must be satisfied from the total, combined, courses and course sets.
+# @param numRequired The number of items required in this collection
+# @param courses The top level courses in collection on which is applied the `numRequired` value
+# @param courseSets The recursively dependent other collections, for which the top level is applied the `numRequired` value
+class CourseSet:
+    def __init__(self, numRequired = 0, courses = [], courseSets = []):
         self.numRequired = numRequired
         self.courses = courses
-        self.courseTuples = courseTuples
+        self.courseSets = courseSets
        
 
+# @desc A single, standalone course offered at a college.
+# MUST refactor to consolidate the properties (believe there are overlaps)
 class Course:
-    def __init__(self, subject = "", number = "", title = "", units = 0, preReqs = CourseTuple(), coReqs = CourseTuple(), concurrentReqs = [], seasonsOffered = {"fall": False, "winter": False, "spring": False}, numChildren = 0, parents = [], children = [], numParents = 0, totalChildren = 0):
+    def __init__(self, subject = "", number = "", title = "", units = 0, preReqs = CourseSet(), \
+            coReqs = CourseSet(), concurrentReqs = [], seasonsOffered = {"fall": False, "winter": False, "spring": False}, \
+            numChildren = 0, parents = [], children = [], numParents = 0, totalChildren = 0):
         self.subject = subject
         self.number = number
         self.title = title
@@ -42,9 +56,6 @@ class Course:
             return True
         else:
             return False
-    # def getChildren(self):
-    #     l = self.preReqs.courses
-    #     return convert(l.extend(self.coReqs.courses), Course)
 
 class Quarter:
     def __init__(self, courses = [], season = ""):
@@ -59,7 +70,7 @@ class Quarter:
             
 class CoursePlan:
     # @param completed is an array of completed courses (or equivalent)
-    def __init__(self, quarters = [], completed = [], maxUnits = 0):
+    def __init__(self, quarters = [], completed = [], maxUnits = 20):
         assert all(isinstance(quarter, Quarter) for quarter in quarters)
         self.quarters = quarters
         self.completed = completed
@@ -96,20 +107,20 @@ def courseInPlan(course, plan, offset):
                 return True
     return False
 
-# return true if the course tuple is satisfied, given the current plan and offset (quarters from the current quarter to cut the check sort)
-def satisfied(plan, courseTuple, offset):
-    if courseTuple.numRequired == 0:
+# return true if the course set is satisfied, given the current plan and offset (quarters from the current quarter to cut the check sort)
+def satisfied(plan, courseSet, offset):
+    if courseSet.numRequired == 0:
         return True
     numSatisfied = 0
-    for course in courseTuple.courses:
+    for course in courseSet.courses:
         if plan.isCompleted(course) or courseInPlan(course, plan, offset):
             numSatisfied += 1
-        if numSatisfied >= courseTuple.numRequired:
+        if numSatisfied >= courseSet.numRequired:
             return True
-    for nestedTuple in courseTuple.courseTuples:
-        if satisfied(plan, nestedTuple, offset):
+    for nestedSet in courseSet.courseSets:
+        if satisfied(plan, nestedSet, offset):
             numSatisfied += 1
-        if numSatisfied >= courseTuple.numRequired:
+        if numSatisfied >= courseSet.numRequired:
             return True
     return False
 
@@ -216,7 +227,7 @@ def display(n):
 # @param a1 is the required coursework to create a plan for
 def createCoursePlan(a1):
     # 1. get a1 as top level ANDed single-dim array, and where it only contains ANDed pre-reqs
-    # assert isinstance(a1, CourseTuple) 
+    # assert isinstance(a1, CourseSet)
     # 2. Count number of children (pre/co) for each course in A1
     for course in a1:
         for preReq in course.preReqs.courses:
@@ -323,9 +334,9 @@ def main():
     quarters = [Quarter(courses[0], "fall"), Quarter(courses[1], "winter"), Quarter([Course("CMPE", "16")], "spring")]
     plan = CoursePlan(quarters, completedCourses, 19)
 
-    # preReq tuple
-    p5c = CourseTuple(2, [], [CourseTuple(2, [courses[0][1], courses[1][1]], []), CourseTuple(1, [courses[0][2], courses[1][2]], [])])
-    c5c = CourseTuple(2, [Course("CMPE", "16"), courses[0][0]], [])
+    # preReq set
+    p5c = CourseSet(2, [], [CourseSet(2, [courses[0][1], courses[1][1]], []), CourseSet(1, [courses[0][2], courses[1][2]], [])])
+    c5c = CourseSet(2, [Course("CMPE", "16"), courses[0][0]], [])
     concurrent = [Course("PHYS", "5N")]
 
 
@@ -348,26 +359,26 @@ def main():
         print("Course eval failed.")
 
 
-    # courses[0][0].preReqs = CourseTuple(1, [courses[1][1], courses[0][1], courses[0][1]],[])
-    # courses[1][0].preReqs  = CourseTuple(1, [courses[1][1], courses[0][1]], [])
+    # courses[0][0].preReqs = CourseSet(1, [courses[1][1], courses[0][1], courses[0][1]],[])
+    # courses[1][0].preReqs  = CourseSet(1, [courses[1][1], courses[0][1]], [])
     
     cmpe16 = Course("CMPE", "16")
-    cmpe16.preReqs = CourseTuple(1, [], [])
+    cmpe16.preReqs = CourseSet(1, [], [])
 
     cmpe17 = Course("CMPE", "17")
-    cmpe17.preReqs = CourseTuple(1, [cmpe16], [])
+    cmpe17.preReqs = CourseSet(1, [cmpe16], [])
 
     cmpe18 = Course("CMPE", "18")
-    cmpe18.preReqs = CourseTuple(1, [cmpe17], [])
+    cmpe18.preReqs = CourseSet(1, [cmpe17], [])
 
     cmpe19 = Course("CMPE", "19")
-    cmpe19.preReqs = CourseTuple(1, [cmpe16, cmpe18], [])
+    cmpe19.preReqs = CourseSet(1, [cmpe16, cmpe18], [])
 
     cmpe20 = Course("CMPE", "20")
-    cmpe20.preReqs = CourseTuple(1, [cmpe16, cmpe17, cmpe18, cmpe19], [])
+    cmpe20.preReqs = CourseSet(1, [cmpe16, cmpe17, cmpe18, cmpe19], [])
 
     math24 = Course("MATH", "24")
-    math24.preReqs = CourseTuple(1, [], [])
+    math24.preReqs = CourseSet(1, [], [])
 
     a1 = [cmpe16, cmpe17, cmpe18, cmpe19, cmpe20, math24]
     createCoursePlan(a1)
