@@ -83,15 +83,16 @@ class Stack:
 #        course
 # @param course A single course definition (optional) for this node
 # @param parentRel The type of relationship between the course in this node and that in its parent.
-#        Must be of type String.."pre" or "co". (optional..not used if does not contain course)
+#        Must be of type String.."pre" or "co". (optionally set to None..not used if does not
+#        contain course)
 # ***********************************************************************************
 class Node:
-    def __init__(self, children = [], numRequired = 0, course = None, parentRel = None,
+    def __init__(self, children = [], course = None, numRequired = 0, parentRel = "pre",
             numDescendents = None, isRoot = False):
         self.children = children
-        self.numRequired = numRequired
         self.course = course
-        self.parentRel = parentRel
+        self.numRequired = numRequired
+        self.parentRel = {parentRel:True} # made so that dict. format is not required
         self.numDescendents = numDescendents
         self.isRoot = isRoot
 
@@ -121,7 +122,7 @@ class Course:
 
 # ***********************************************************************************
 # @desc A single quarter in the Timeline
-# @param courses An array of courses inserted into the specific quarter
+# @param courses An array of courses inserted into the specific quarter. Must be of type Course
 # @param season A string containing the season this quarter is in..used with course season dict.
 # @param maxUnits the max number of units desired for this quarter
 # ***********************************************************************************
@@ -142,7 +143,7 @@ class Quarter:
 # @desc The planned out courses in their quarter with respect their seasons
 # @param quarters Contains of the currently planned out quarters
 # @param completedCourses Contains a bucket (dictionary) of all completed courses in the format
-#        [cid]->[course]
+#        [cid]->[boolean]
 # @param quarters List of all quarter in the Timeline (length may be greater than currentQuarter)
 # @param currentQuarter Index of the quarter that's currently being worked on
 # @param startingSeason The default season of the first quarter in the timeline
@@ -203,7 +204,11 @@ class Timeline:
 def printTimeline(timeline):
     assert isinstance(timeline, Timeline)
     print("Timeline:")
+    year = 1
     for i in range(len(timeline.quarters)):
+        if i % 3 == 0:
+            print "- - - - - - Year " + str(year) + " - - - - - -"
+            year += 1
         print(" Qtr " + str(i + 1) + ", " + str(timeline.quarters[i].getTotalUnits()) \
                 + " units(s), (" + timeline.quarters[i].season + ")")
         for course in timeline.quarters[i].courses:
@@ -228,6 +233,7 @@ def printTree(head):
             for child in node.children:
                 nextLevel.append(child)
         print # add new line
+        print
         currentLevel = nextLevel # proceed to next level
 
 # ***********************************************************************************
@@ -319,6 +325,28 @@ def dfsClean(node, removables):
         i += 1
 
 # ***********************************************************************************
+# @desc DFS-postorder implementation that builds out all of the subtrees of node by, when
+#       encountering a child node, looking up its child nodes in courseNodeDict
+#       and then recurring on node with newly defined subtrees. This allows for input of just
+#       course nodes and their immediate children to get a fully fledged gen-path or one-path
+#       tree (gen-path currently untested, but shouldn't matter b/c based off of children only).
+# @param node The head of the current sub-tree. Must be of type Node
+# @param courseNodes A 1 dimensional array of nodes w/ defined subtrees
+# @param courseNodeDict Dict. of [cid]->[index in courseNodes] used as a lookup table
+# ***********************************************************************************
+def dfsConnectNodeSubtrees(node, courseNodes, courseNodeLookupDict):
+    # for every child in node
+    for child in node.children:
+        # lookup child in dict. and use to define children of child
+        child.children = courseNodes[courseNodeLookupDict[child.course.getCid()]].children
+        # dive into children
+        dfsConnectNodeSubtrees(child, courseNodes, courseNodeLookupDict)
+
+
+
+
+
+# ***********************************************************************************
 # @desc Creates and returns a priority stack of all the nodes in the passed tree. This is done by
 #       performing a basic BFS, where pushToPriorityStack(node) is called for every visit (dequeue)
 #       of a node. Root node is not added to stack.
@@ -377,6 +405,7 @@ def mapTimeline(timeline, headOrigin):
     assert isinstance(headOrigin, Node)
     head = copy.deepcopy(headOrigin)
     addedCourses = {} # dict. of courses used to quickly check if course has already been placed
+    timeline.currentQuarter = 0 # always start mapping (or remapping) at the first quarter
     # 5. return once all descendents of head have been placed
     while len(head.children) > 0:
         # 6. recursively sort tree (DFS) by number of children, from least->most b/c a
@@ -418,7 +447,6 @@ def mapTimeline(timeline, headOrigin):
         # 14. Mutate and cleanup the tree copy, `head`, from any nodes matching courses in dict.
         # temp for testing
         printDictionary(addedCourses)
-        # newHead = Node([], head.numRequired, None, None, None, True)
         dfsClean(head, addedCourses)
         printTree(head)
         # 15. Return to step 5
@@ -428,48 +456,166 @@ def mapTimeline(timeline, headOrigin):
 #####################################################################################
 # Main
 #####################################################################################
+# temporary function to do a simple task
+def appendAndDict(someList, someDict, i, node):
+    someList.append(node)
+    someDict[node.course.getCid()] = i
+    i += 1
+    return i
 def main():
-    # create testing data
-    completedCourses = {}
-    courses = {
-            "c4": Course("C", "4", None, 5, {"fall":True, "winter":True, "spring":True}),
-            "c5": Course("C", "5", None, 5, {"fall":True, "winter":True, "spring":True}),
-            "c6": Course("C", "6", None, 5, {"fall":True, "winter":True, "spring":True}),
-            "c7": Course("C", "7", None, 5, {"fall":True, "winter":True, "spring":True}),
-            "c8": Course("C", "8", None, 5, {"fall":True, "winter":True, "spring":True}),
-            "c9": Course("C", "9", None, 5, {"fall":True, "winter":True, "spring":True}),
-            "c10": Course("C", "10", None, 5, {"fall":True, "winter":True, "spring":True}),
-            "c11": Course("C", "11", None, 5, {"fall":True, "winter":True, "spring":True}),
-            "c12": Course("C", "12", None, 5, {"fall":True, "winter":True, "spring":True}),
-            "c13": Course("C", "13", None, 5, {"fall":True, "winter":True, "spring":True})
+    # dictionary of all testing courses
+    course = {
+            'MATH19A': Course("MATH", "19A", None, 5, {"fall":True, "winter":True, "spring":True}),        # i=0
+            'MATH19B': Course("MATH", "19B", None, 5, {"fall":True, "winter":True, "spring":True}),
+            'MATH23A': Course("MATH", "23A", None, 5, {"fall":True, "winter":True, "spring":True}),
+            'CMPE8': Course("CMPE", "8", None, 5, {"fall":True, "winter":False, "spring":False}),
+            'CMPE16': Course("CMPE", "16", None, 5, {"fall":True, "winter":True, "spring":True}),
+            'CMPE107': Course("CMPE", "107", None, 5, {"fall":False, "winter":True, "spring":True}),
+            'CMPE12': Course("CMPE", "12", None, 5, {"fall":True, "winter":True, "spring":True}),
+            'CMPE12L': Course("CMPE", "12L", None, 2, {"fall":True, "winter":True, "spring":True}),
+            'CMPE13': Course("CMPE", "13", None, 5, {"fall":False, "winter":True, "spring":True}),
+            'CMPE13L': Course("CMPE", "13L", None, 2, {"fall":False, "winter":True, "spring":True}),
+            'CMPE9': Course("CMPE", "9", None, 5, {"fall":False, "winter":True, "spring":False}),         # i=10
+            'CMPE115': Course("CMPE", "115", None, 5, {"fall":False, "winter":False, "spring":True}),
+            'CMPE100': Course("CMPE", "100", None, 5, {"fall":False, "winter":True, "spring":True}),
+            'CMPE100L': Course("CMPE", "100L", None, 2, {"fall":False, "winter":True, "spring":True}),
+            'CMPE121': Course("CMPE", "121", None, 5, {"fall":True, "winter":False, "spring":True}),
+            'CMPE121L': Course("CMPE", "121L", None, 2, {"fall":True, "winter":False, "spring":True}),
+            'CMPE118': Course("CMPE", "118", None, 5, {"fall":True, "winter":False, "spring":False}),
+            'CMPE118L': Course("CMPE", "118L", None, 2, {"fall":True, "winter":False, "spring":False}),
+            'CMPE141': Course("CMPE", "141", None, 5, {"fall":True, "winter":False, "spring":False}),
+            'CMPE167': Course("CMPE", "167", None, 5, {"fall":False, "winter":True, "spring":False}),
+            'CMPE167L': Course("CMPE", "167L", None, 2, {"fall":False, "winter":True, "spring":False}),     # i=20
+            'CMPE216': Course("CMPE", "216", None, 5, {"fall":False, "winter":False, "spring":True}),
+            'CMPE80E': Course("CMPE", "80E", None, 5, {"fall":False, "winter":False, "spring":True}),
+            'CMPE185': Course("CMPE", "185", None, 5, {"fall":True, "winter":True, "spring":True}),
+            'CMPE129A': Course("CMPE", "129A", None, 5, {"fall":True, "winter":False, "spring":False}),
+            'CMPE129B': Course("CMPE", "129B", None, 5, {"fall":False, "winter":True, "spring":False}),
+            'CMPE129C': Course("CMPE", "129C", None, 5, {"fall":False, "winter":False, "spring":True}),
+            'EE103': Course("EE", "103", None, 5, {"fall":True, "winter":False, "spring":True}),
+            'EE103L': Course("EE", "103L", None, 2, {"fall":True, "winter":False, "spring":True}),
+            'EE101': Course("EE", "101", None, 5, {"fall":True, "winter":True, "spring":False}),
+            'EE101L': Course("EE", "101L", None, 2, {"fall":True, "winter":True, "spring":False}),        # i=30
+            'AMS10': Course("AMS", "10", None, 5, {"fall":True, "winter":False, "spring":True}),
+            'AMS20': Course("AMS", "20", None, 5, {"fall":False, "winter":True, "spring":True}),
+            'CMPS12B': Course("CMPS", "12B", None, 5, {"fall":True, "winter":True, "spring":False}),
+            'CMPS12M': Course("CMPS", "12M", None, 2, {"fall":True, "winter":True, "spring":False}),
+            'CMPS101': Course("CMPS", "101", None, 5, {"fall":True, "winter":True, "spring":True}),
+            'PHYS5A': Course("PHYS", "5A", None, 5, {"fall":True, "winter":False, "spring":False}),
+            'PHYS5L': Course("PHYS", "5L", None, 1, {"fall":True, "winter":False, "spring":False}),
+            'PHYS5C': Course("PHYS", "5C", None, 5, {"fall":False, "winter":False, "spring":True}),
+            'PHYS5N': Course("PHYS", "5N", None, 1, {"fall":False, "winter":False, "spring":True})        # i=39
             }
+
+    # some vars
+    uniqueCourseNodes = [] # list that will contain all unique course nodes below
+    courseNodeLookupDict = {} # dict used to lookup course node in `uniqueCourse` by its cid
+    i = 0 # index to inc. as val in dict: [cid]->[index]
+    head = Node([],None,8,None,None,True) # head of the final tree passed mapTimeline
+    # all unique course nodes and their immediate children (no uncertainty)
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([], course["CMPE8"]))
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([Node([],course["CMPE8"])], course["CMPE12"]))
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([Node([],course["CMPE12"])], course["CMPE13"]))
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([], course["MATH19A"]))
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([Node([],course["MATH19A"])], course["MATH19B"]))
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([Node([],course["CMPE13"])], course["CMPS12B"]))
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([Node([],course["MATH19A"])], course["CMPE16"]))
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([], course["AMS10"]))
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([Node([],course["MATH19A"],0,"co")], course["PHYS5A"]))
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([Node([],course["MATH19B"])], course["MATH23A"]))
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([Node([],course["MATH19B"]),Node([],course["AMS10"])], course["AMS20"]))
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([Node([],course["PHYS5A"]),Node([],course["MATH19B"])], course["PHYS5C"]))
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([Node([],course["CMPS12B"]),Node([],course["AMS10"]),Node([],course["MATH19B"]),Node([],course["CMPE16"])], course["CMPS101"]))
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([Node([],course["CMPE12"])], course["CMPE100"]))
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([Node([],course["PHYS5C"]),Node([],course["AMS20"],0,"co")], course["EE101"]))
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([Node([],course["EE101"],0,"co"),Node([],course["CMPE100"])], course["CMPE118"]))
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([Node([],course["CMPE16"]),Node([],course["MATH23A"])], course["CMPE107"]))
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([Node([],course["MATH19A"]),Node([],course["AMS10"]),Node([],course["PHYS5A"])], course["CMPE9"]))
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([Node([],course["CMPE9"]),Node([],course["AMS10"]),Node([],course["MATH19B"])], course["CMPE115"]))
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([Node([],course["CMPE12"]),Node([],course["EE101"]),Node([],course["CMPE100"]),Node([],course["CMPE13"])], course["CMPE121"]))
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([Node([],course["CMPE9"])], course["CMPE216"]))
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([Node([],course["EE101"]),Node([],course["AMS20"])], course["EE103"]))
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([Node([],course["CMPE185"],0,"co"),Node([],course["CMPE121"],0,"co")], course["CMPE129A"]))
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([Node([],course["EE103"])], course["CMPE141"]))
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([Node([],course["CMPE12"])], course["CMPE185"]))
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([Node([],course["CMPE129A"])], course["CMPE129B"]))
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([Node([],course["CMPE13"]), Node([],course["EE103"])], course["CMPE167"]))
+    i = appendAndDict(uniqueCourseNodes, courseNodeLookupDict, i, Node([Node([],course["CMPE129B"])], course["CMPE129C"]))
+
+    # connect all subtrees so that can sort uniqueCourseNodes by num descendents
+    uniqueNodesHead = Node(uniqueCourseNodes)
+    printTree(uniqueNodesHead)
+    dfsConnectNodeSubtrees(uniqueNodesHead, uniqueCourseNodes, courseNodeLookupDict)
+    # printDictionary(courseNodeLookupDict)
+        # ..all sub tree have been formed, now sort from least to most descendents
+    # sort by num descendents
+    dfsSort(uniqueNodesHead, False)
+    # print immediate children of head in list of unique nodes ordered by #descendents in ascending order
+    print "New ordering"
+    print "[ ",
+    for i in range(len(uniqueNodesHead.children)):
+        print uniqueNodesHead.children[i].course.getCid(),
+        if i < len(uniqueNodesHead.children)-1:
+            print ",",
+    print " ]"
+    print
+
+    # # Now get the consolidated one path tree from these one path subtrees
+    descendents = {} # and roots children at `head.children`
+    for node in uniqueNodesHead.children:
+        if not node.course.getCid() in descendents:
+            # add its children to the unique descendents
+            for child in node.children:
+                descendents[child.course.getCid()] = True
+            # add the node to head's children
+            head.children.append(node)
+            # clean head's children of any nodes now present in unique descendents
+            i = 0; length = len(head.children) # must do this method b/c removing items from the list while iterating
+            while (i < length):
+                if head.children[i].course.getCid() in descendents:
+                    del head.children[i]
+                    i -= 1; length -= 1 # decrement counter and length after removing item
+                i += 1
+
+    print "Immediate children of head of consolidated one-path tree"
+    print "[ ",
+    for i in range(len(head.children)):
+        print head.children[i].course.getCid(),
+        if i < len(head.children)-1:
+            print ",",
+    print " ]"
+    print
+
+    # completedCourses = {"AMS10":True, "AMS20":True, "CHEM1A":True, "CMPE100":True, "CMPE12":True, "CMPE13":True, "CMPE16":True, "CMPE8":True, "CMPS12B":True, "MATH19A":True, "MATH19B":True, "MATH23A":True, "PHYS5A":True, "PHYS5C":True}
+    completedCourses = {}
     quarters = [ \
+            Quarter([], "fall", 10), \
+            Quarter([], "winter", 10), \
+            Quarter([], "spring", 19), \
             Quarter([], "fall", 19), \
             Quarter([], "winter", 19), \
             Quarter([], "spring", 19), \
             Quarter([], "fall", 19), \
             Quarter([], "winter", 19), \
-            Quarter([], "spring", 19) \
+            Quarter([], "spring", 19), \
+            Quarter([], "fall", 19), \
+            Quarter([], "winter", 19), \
+            Quarter([], "spring", 19), \
+            Quarter([], "fall", 19), \
+            Quarter([], "winter", 19), \
+            Quarter([], "spring", 19), \
+            Quarter([], "fall", 19), \
+            Quarter([], "winter", 19), \
+            Quarter([], "spring", 19)
             ]
     timeline = Timeline(completedCourses, quarters)
 
     # print timeline
+    print "Timeline knot:"
     printTimeline(timeline);
 
-    # 4. create the consolidated one-path tree (skipping prior steps)
-    head = Node([
-        Node([
-            Node([], 0, courses["c8"], {"pre":True}),
-            Node([
-                Node([], 0, courses["c10"], {"pre":True})
-                ], 1, courses["c11"], {"pre":True})
-            ], 1, courses["c5"], {"pre":True}),
-        Node([
-            Node([], 0, courses["c10"], {"pre":True})
-            ], 1, courses["c7"], {"pre":True})
-        ], 2,None,None,None,True)
-
     # print co-pt
+    print "Current co-pt:"
     printTree(head)
 
     # createTimeline takes as input a consolidated one-path tree
@@ -477,8 +623,7 @@ def main():
 
     # print timeline again
     print
-    print
+    print "Finished timeline!!!:"
     printTimeline(timeline)
-
 
 main()
