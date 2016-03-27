@@ -1,2 +1,3 @@
 # data files
 api/courses.txt
+*/*.pyc
