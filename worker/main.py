@@ -417,48 +417,51 @@ def mapTimeline(timeline, headOrigin):
     timeline.currentQuarter = 0 # always start mapping (or remapping) at the first quarter
     # 5. return once all descendents of head have been placed
     while len(head.children) > 0:
-        # 6. recursively sort tree (DFS) by number of children, from least->most b/c a
+        # 6. Add any pre-existing courses in current quarter to the addedCourses dict.
+        for course in timeline.quarters[timeline.currentQuarter]:
+            addedCourses[course.getCid()] = True
+        # 7. recursively sort tree (DFS) by number of children, from least->most b/c a
         #    BFS is left->right, top->down and a stack is LIFO..making the bottom right
         #    node appear first
         dfsSort(head, False)
         printTree(head)
-        # 7. populate "priority stack" about the head of tree
+        # 8. populate "priority stack" about the head of tree
         priorityStack = createPriorityStack(head)
         printPriorityStack(priorityStack)
-        # 8. operate on each node in stack unless exit condition evals
+        # 9. operate on each node in stack unless exit condition evals
         for i in range(len(priorityStack.items)):
             node = priorityStack.pop()
-            # 9. Node's course exists in addedCourses dict.?
+            # 10. Node's course exists in addedCourses dict.?
             if node.course.getCid() in addedCourses:
                 continue # move to next node in stack
-            # 10. Node's course passes eval for current quarter?
+            # 11. Node's course passes eval for current quarter?
             if not courseDoesEval(node, timeline):
                 continue # move to next node in stack
-            # 11. Add course and any concurrents to addedCourses dict. & current quarter in
+            # 12. Add course and any concurrents to addedCourses dict. & current quarter in
             #     timeline. Undecided about the concurrent, so not adding that for now
             addedCourses[node.course.getCid()] = node.course
             timeline.quarters[timeline.currentQuarter].courses.append(node.course)
-            # 12. Current quarter's total units equal quarter's maxUnits?
+            # 13. Current quarter's total units equal quarter's maxUnits?
             if not timeline.quarters[timeline.currentQuarter].getTotalUnits == \
                     timeline.quarters[timeline.currentQuarter].maxUnits:
                 continue # move to next node in stack
             else:
                 break # move to next quarter, recomputing priority stack
-        # 13. Increment current quarter
+        # 14. Increment current quarter
         timeline.currentQuarter += 1 # move to next quarter
-        # 13.2. Make sure that quarter exists
+        # 14.2. Make sure that quarter exists
         if len(timeline.quarters) == timeline.currentQuarter:
             seasonsMap = {"fall":0, "winter":1, "spring":2}
             seasons = {0:"fall", 1:"winter", 2:"spring"}
             oldSeason = timeline.quarters[timeline.currentQuarter-1].season
             newSeason = seasons[(seasonsMap[oldSeason] + 1)%3]
             timeline.quarters.append(Quarter([], newSeason))
-        # 14. Mutate and cleanup the tree copy, `head`, from any nodes matching courses in dict.
+        # 15. Mutate and cleanup the tree copy, `head`, from any nodes matching courses in dict.
         # temp for testing
         printDictionary(addedCourses)
         dfsClean(head, addedCourses)
         printTree(head)
-        # 15. Return to step 5
+        # 16. Return to step 5
 
 
 
