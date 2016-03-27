@@ -92,7 +92,7 @@ class Node:
         self.children = children
         self.course = course
         self.numRequired = numRequired
-        self.parentRel = {parentRel:True} # made so that dict. format is not required
+        self.parentRel = parentRel
         self.numDescendents = numDescendents
         self.isRoot = isRoot
 
@@ -175,11 +175,24 @@ class Timeline:
         # check if is in completed courses
         if self.isCompleted(course):
             return True
-        # check if is in a previous (or possibly current) quarter
-        offset = -1 if parentRel == "pre" else 0
+        # determine offset from currentQuarter
+        if parentRel == "pre":
+            offset = -1
+        elif parentRel == "co":
+            offset = 0
+        else:
+            for i in range(10):
+                print
         endIndex = self.currentQuarter+offset
-        endIndex = 0 if endIndex < 0 else endIndex
-        for quarter in self.quarters[0:endIndex]:
+        # determine the quarters list to check
+        if endIndex == -1:
+            iteratingQuarters = []
+        elif endIndex == 0:
+            iteratingQuarters = [self.quarters[0]]
+        else:
+            iteratingQuarters = self.quarters[0:endIndex]
+        # check the quarters
+        for quarter in iteratingQuarters:
             for c in quarter.courses:
                 if course.getCid() == c.getCid():
                     return True
@@ -329,7 +342,7 @@ def dfsClean(node, removables):
 #       encountering a child node, looking up its child nodes in courseNodeDict
 #       and then recurring on node with newly defined subtrees. This allows for input of just
 #       course nodes and their immediate children to get a fully fledged gen-path or one-path
-#       tree (gen-path currently untested, but shouldn't matter b/c based off of children only).
+#       tree. To also work with pivot nodes, need make change detailed in workflow 2.0.
 # @param node The head of the current sub-tree. Must be of type Node
 # @param courseNodes A 1 dimensional array of nodes w/ defined subtrees
 # @param courseNodeDict Dict. of [cid]->[index in courseNodes] used as a lookup table
@@ -341,10 +354,6 @@ def dfsConnectNodeSubtrees(node, courseNodes, courseNodeLookupDict):
         child.children = courseNodes[courseNodeLookupDict[child.course.getCid()]].children
         # dive into children
         dfsConnectNodeSubtrees(child, courseNodes, courseNodeLookupDict)
-
-
-
-
 
 # ***********************************************************************************
 # @desc Creates and returns a priority stack of all the nodes in the passed tree. This is done by
@@ -589,8 +598,8 @@ def main():
     # completedCourses = {"AMS10":True, "AMS20":True, "CHEM1A":True, "CMPE100":True, "CMPE12":True, "CMPE13":True, "CMPE16":True, "CMPE8":True, "CMPS12B":True, "MATH19A":True, "MATH19B":True, "MATH23A":True, "PHYS5A":True, "PHYS5C":True}
     completedCourses = {}
     quarters = [ \
-            Quarter([], "fall", 10), \
-            Quarter([], "winter", 10), \
+            Quarter([], "fall", 19), \
+            Quarter([], "winter", 19), \
             Quarter([], "spring", 19), \
             Quarter([], "fall", 19), \
             Quarter([], "winter", 19), \
