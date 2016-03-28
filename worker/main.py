@@ -105,8 +105,7 @@ def main():
     uniqueNodesHead = rq.Node(uniqueCourseNodes)
     rq.printTree(uniqueNodesHead)
     rq.dfsConnectNodeSubtrees(uniqueNodesHead, uniqueCourseNodes, courseNodeLookupDict)
-    # printDictionary(courseNodeLookupDict)
-        # ..all sub tree have been formed, now sort from least to most descendents
+
     # sort by num descendents
     rq.dfsSort(uniqueNodesHead, False)
     # print immediate children of head in list of unique nodes ordered by #descendents in ascending order
@@ -119,7 +118,7 @@ def main():
     print " ]"
     print
 
-    # # Now get the consolidated one path tree from these one path subtrees
+    # Now get the consolidated one path tree from these one path subtrees
     descendents = {} # and roots children at `head.children`
     for node in uniqueNodesHead.children:
         if not node.course.getCid() in descendents:
