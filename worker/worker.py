@@ -79,22 +79,27 @@ class Stack:
 # @desc A node in one of the course-dependent trees; acts like a container for courses that may or
 #       may not be filled.
 # @param children List of all child nodes
+# @param course A single course definition (optional) for this node
 # @param numRequired The number of the children that must be satisfied in the tree to take this
 #        course
-# @param course A single course definition (optional) for this node
+# @param pivot The name of this pivot node (used mostly for tree goal heads). For now must not have
+#        spaces
 # @param parentRel The type of relationship between the course in this node and that in its parent.
 #        Must be of type String.."pre" or "co". (optionally set to None..not used if does not
 #        contain course)
+# @param numDescendents Exactly as named
+# @param isHead Boolean for whether or not node is head of a tree
 # ***********************************************************************************
 class Node:
-    def __init__(self, children = [], course = None, numRequired = 0, parentRel = "pre",
-            numDescendents = None, isRoot = False):
+    def __init__(self, children = [], course = None, numRequired = 0, name = "", parentRel = "pre",
+            numDescendents = None, isHead = False):
         self.children = children
         self.course = course
         self.numRequired = numRequired
+        self.pivot = name
         self.parentRel = parentRel
         self.numDescendents = numDescendents
-        self.isRoot = isRoot
+        self.isHead = isHead
 
 # ***********************************************************************************
 # @desc A single course and its attributes
@@ -365,7 +370,7 @@ def createPriorityStack(node):
     # @desc Pushes a node into the priority stack
     # @param node The node to be pushed
     def pushToPriorityStack(node):
-        if not node.isRoot:
+        if not node.isHead:
             priorityStack.push(node)
 
     # init final priority stack

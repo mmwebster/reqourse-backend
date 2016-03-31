@@ -27,6 +27,5 @@ def main():
             student.main()
         else:
             print "Error: Invalid arg"
-            break
-
+            break 
 main()
